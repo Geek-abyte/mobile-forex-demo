@@ -20,6 +20,7 @@ import { realisticMarketSimulation } from '../../services/realisticMarketSimulat
 import type { CandleData } from '../../components/organisms/ProfessionalTradingChart';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+const { colors, typography, spacing, shadows } = theme;
 
 interface FloatingActionButtonProps {
   icon: string;
@@ -31,7 +32,7 @@ interface FloatingActionButtonProps {
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   icon,
   onPress,
-  backgroundColor = theme.colors.primary[500],
+  backgroundColor = colors.primary[500],
   size = 56,
 }) => (
   <TouchableOpacity
@@ -364,8 +365,6 @@ const ChartScreen: React.FC = () => {
     </>
   );
 };
-
-const { colors, spacing, typography, shadows } = theme;
 
 const styles = StyleSheet.create({
   container: {

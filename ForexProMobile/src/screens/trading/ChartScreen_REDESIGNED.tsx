@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import theme from '../../theme';
+import { colors, typography, spacing, shadows } from '../../theme';
 import ProfessionalTradingChart from '../../components/organisms/ProfessionalTradingChart';
 import { enhancedTradingService } from '../../services/enhancedTradingService';
 import { realisticMarketSimulation } from '../../services/realisticMarketSimulation';
@@ -31,7 +31,7 @@ interface FloatingActionButtonProps {
 const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   icon,
   onPress,
-  backgroundColor = theme.colors.primary[500],
+  backgroundColor = colors.primary[500],
   size = 56,
 }) => (
   <TouchableOpacity
@@ -99,7 +99,7 @@ const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
   );
 };
 
-const ChartScreen: React.FC = () => {
+const ChartScreenRedesigned: React.FC = () => {
   const [selectedSymbol, setSelectedSymbol] = useState('EURUSD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1H');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -365,8 +365,6 @@ const ChartScreen: React.FC = () => {
   );
 };
 
-const { colors, spacing, typography, shadows } = theme;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -590,4 +588,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChartScreen;
+export default ChartScreenRedesigned;

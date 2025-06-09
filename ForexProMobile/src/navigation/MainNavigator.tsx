@@ -20,6 +20,7 @@ import OrderHistoryScreen from '../screens/trading/OrderHistoryScreen';
 import DepositScreen from '../screens/wallet/DepositScreen';
 import WithdrawScreen from '../screens/wallet/WithdrawScreen';
 import TransactionHistoryScreen from '../screens/wallet/TransactionHistoryScreen';
+import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 
 export type MainTabParamList = {
   Dashboard: undefined;
@@ -38,6 +39,7 @@ export type MainStackParamList = {
   Withdraw: { currency?: string };
   TransactionHistory: undefined;
   Profile: undefined;
+  Analytics: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -206,6 +208,14 @@ const MainNavigator: React.FC = () => {
         component={ProfileScreen}
         options={{
           gestureEnabled: true,
+        }}
+      />
+      <Stack.Screen
+        name="Analytics"
+        component={AnalyticsScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Portfolio Analytics',
         }}
       />
     </Stack.Navigator>

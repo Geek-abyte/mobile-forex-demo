@@ -189,6 +189,16 @@ const DashboardScreen: React.FC = () => {
           
           <TouchableOpacity 
             style={styles.actionButton}
+            onPress={() => navigation.navigate('Analytics' as never)}
+          >
+            <View style={[styles.actionGradient, { backgroundColor: colors.background.tertiary }]}>
+              <Ionicons name="analytics" size={24} color={colors.secondary[500]} />
+              <Text style={[styles.actionText, { color: colors.secondary[500] }]}>Analytics</Text>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.actionButton}
             onPress={() => navigation.navigate('Market' as never)}
           >
             <View style={[styles.actionGradient, { backgroundColor: colors.background.tertiary }]}>

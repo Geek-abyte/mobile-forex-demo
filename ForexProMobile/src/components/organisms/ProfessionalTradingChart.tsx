@@ -1,7 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Dimensions, Platform } from 'react-native';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { colors } from '../../theme';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { CandlestickChart, LineChart } from 'react-native-wagmi-charts';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, typography } from '../../theme';
 
 const { width } = Dimensions.get('window');
 
