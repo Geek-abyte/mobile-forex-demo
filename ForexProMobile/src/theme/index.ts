@@ -64,7 +64,7 @@ export const useColors = () => useTheme().colors;
 export const useTypography = () => useTheme().typography;
 export const useSpacing = () => useTheme().spacing;
 export const useShadows = () => useTheme().shadows;
-export const useAnimations = () => useTheme().animations;
+export const useThemeAnimations = () => useTheme().animations;
 
 // Export everything
 export * from './colors';

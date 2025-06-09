@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build and Run Forex Pro Mobile",
+			"type": "shell",
+			"command": "cd ForexProMobile && npm install && npx expo start",
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

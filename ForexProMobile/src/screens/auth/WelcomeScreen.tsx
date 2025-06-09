@@ -67,7 +67,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 800,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   }, []);
 
@@ -75,7 +75,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
     Animated.timing(slideAnim, {
       toValue: 1,
       duration: 500,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   }, [currentSlide]);
 

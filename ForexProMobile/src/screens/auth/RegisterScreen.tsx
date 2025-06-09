@@ -49,7 +49,7 @@ const RegisterScreen: React.FC = () => {
     Animated.timing(animatedValue, {
       toValue: 1,
       duration: 800,
-      useNativeDriver: true,
+      useNativeDriver: false,
     }).start();
   }, []);
 

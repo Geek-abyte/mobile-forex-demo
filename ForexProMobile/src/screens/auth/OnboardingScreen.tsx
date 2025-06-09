@@ -70,17 +70,17 @@ const OnboardingScreen: React.FC = () => {
       Animated.timing(fadeAnims[currentIndex], {
         toValue: 1,
         duration: 600,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
       Animated.timing(slideAnims[currentIndex], {
         toValue: 0,
         duration: 600,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
       Animated.timing(scaleAnims[currentIndex], {
         toValue: 1,
         duration: 600,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }),
     ]).start();
   }, [currentStep]);

@@ -16,8 +16,10 @@ import ProfileScreen from '../screens/main/ProfileScreen';
 // Import modal screens
 import OrderScreen from '../screens/trading/OrderScreen';
 import ChartScreen from '../screens/trading/ChartScreen';
+import OrderHistoryScreen from '../screens/trading/OrderHistoryScreen';
 import DepositScreen from '../screens/wallet/DepositScreen';
 import WithdrawScreen from '../screens/wallet/WithdrawScreen';
+import TransactionHistoryScreen from '../screens/wallet/TransactionHistoryScreen';
 
 export type MainTabParamList = {
   Dashboard: undefined;
@@ -31,8 +33,10 @@ export type MainStackParamList = {
   MainTabs: undefined;
   Order: { symbol?: string; type?: 'buy' | 'sell' };
   Chart: { symbol: string };
+  OrderHistory: undefined;
   Deposit: { currency?: string };
   Withdraw: { currency?: string };
+  TransactionHistory: undefined;
   Profile: undefined;
 };
 
@@ -164,6 +168,14 @@ const MainNavigator: React.FC = () => {
         }}
       />
       <Stack.Screen
+        name="OrderHistory"
+        component={OrderHistoryScreen}
+        options={{
+          title: 'Order History',
+          gestureEnabled: true,
+        }}
+      />
+      <Stack.Screen
         name="Deposit"
         component={DepositScreen}
         options={{
@@ -179,6 +191,14 @@ const MainNavigator: React.FC = () => {
           presentation: 'modal',
           gestureEnabled: true,
           gestureDirection: 'vertical',
+        }}
+      />
+      <Stack.Screen
+        name="TransactionHistory"
+        component={TransactionHistoryScreen}
+        options={{
+          title: 'Transaction History',
+          gestureEnabled: true,
         }}
       />
       <Stack.Screen
