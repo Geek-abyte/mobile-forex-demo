@@ -1,5 +1,6 @@
 import { TradeRequest, Position, Order, AccountSummary } from './tradingService';
 import { realisticMarketSimulation } from './realisticMarketSimulation';
+import NotificationIntegration from './notificationIntegration';
 
 class EnhancedTradingService {
   private currentPositions: Position[] = [];
@@ -53,6 +54,14 @@ class EnhancedTradingService {
     this.currentPositions.push(position);
     this.balance -= commission; // Deduct commission
     this.updateAccountMetrics();
+
+    // Send notification about trade execution
+    await NotificationIntegration.onTradeExecuted(
+      request.symbol,
+      request.type,
+      request.size,
+      executionPrice
+    );
 
     // Log realistic trading activity
     console.log(`✅ Order executed: ${request.type.toUpperCase()} ${request.size} ${request.symbol} @ ${executionPrice.toFixed(5)} (Slippage: ${slippage.toFixed(5)})`);
@@ -252,6 +261,21 @@ class EnhancedTradingService {
     // Update account balance
     this.balance += totalPnl + position.margin; // Return margin and add/subtract P&L
 
+    // Send notification based on result
+    if (totalPnl > 0) {
+      await NotificationIntegration.onTakeProfitHit(
+        position.symbol,
+        executionPrice,
+        totalPnl
+      );
+    } else if (totalPnl < 0) {
+      await NotificationIntegration.onStopLossTriggered(
+        position.symbol,
+        executionPrice,
+        Math.abs(totalPnl)
+      );
+    }
+
     // Remove from active positions
     this.currentPositions.splice(positionIndex, 1);
 
@@ -262,7 +286,25 @@ class EnhancedTradingService {
 
   private updateAccountMetrics(): void {
     const totalPnL = this.currentPositions.reduce((sum, pos) => sum + pos.pnl, 0);
+    const totalMargin = this.currentPositions.reduce((sum, pos) => sum + pos.margin, 0);
     this.equity = this.balance + totalPnL;
+    
+    // Calculate margin level and check for margin calls
+    const marginLevel = totalMargin > 0 ? (this.equity / totalMargin) * 100 : 0;
+    
+    // Trigger margin call notifications
+    if (marginLevel > 0 && marginLevel < 50) { // Critical margin level
+      NotificationIntegration.onMarginCall(marginLevel);
+    } else if (marginLevel > 0 && marginLevel < 100) { // Warning margin level
+      NotificationIntegration.onAccountUpdate(
+        `Warning: Margin level at ${marginLevel.toFixed(1)}%. Consider managing your risk.`
+      );
+    }
+    
+    // Check for low balance
+    if (this.balance < 1000) { // Less than $1000
+      NotificationIntegration.onLowBalance(this.balance, 1000);
+    }
     
     // Calculate drawdown
     const peakEquity = Math.max(this.equity, this.maxDrawdown || this.equity);

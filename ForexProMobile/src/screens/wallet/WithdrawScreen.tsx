@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
+import StandardHeader from '../../components/molecules/StandardHeader';
 
 const WithdrawScreen: React.FC = () => {
   const navigation = useNavigation();
@@ -28,9 +29,9 @@ const WithdrawScreen: React.FC = () => {
   ];
 
   const withdrawMethods = [
-    { id: 'bank', name: 'Bank Transfer', icon: 'account-balance', fee: '0.1%' },
-    { id: 'card', name: 'Debit Card', icon: 'credit-card', fee: '0.5%' },
-    { id: 'crypto', name: 'Cryptocurrency', icon: 'currency-bitcoin', fee: '0.05%' },
+    { id: 'bank', name: 'Bank Transfer', icon: 'business', fee: '0.1%' },
+    { id: 'card', name: 'Debit Card', icon: 'card', fee: '0.5%' },
+    { id: 'crypto', name: 'Cryptocurrency', icon: 'logo-bitcoin', fee: '0.05%' },
   ];
 
   const selectedCurrencyData = currencies.find(c => c.code === selectedCurrency);
@@ -61,16 +62,7 @@ const WithdrawScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Icon name="arrow-back" size={24} color={colors.text.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Withdraw Funds</Text>
-        <View style={styles.headerRight} />
-      </View>
+      <StandardHeader title="Withdraw Funds" showBackButton={true} />
 
       <ScrollView style={styles.content}>
         {/* Currency Selection */}
@@ -137,8 +129,8 @@ const WithdrawScreen: React.FC = () => {
               onPress={() => setSelectedMethod(method.id)}
             >
               <View style={styles.methodInfo}>
-                <Icon
-                  name={method.icon}
+                <Ionicons
+                  name={method.icon as any}
                   size={24}
                   color={selectedMethod === method.id ? colors.primary[500] : colors.text.secondary}
                 />
@@ -152,8 +144,8 @@ const WithdrawScreen: React.FC = () => {
                   <Text style={styles.methodFee}>Fee: {method.fee}</Text>
                 </View>
               </View>
-              <Icon
-                name={selectedMethod === method.id ? 'radio-button-checked' : 'radio-button-unchecked'}
+              <Ionicons
+                name={selectedMethod === method.id ? 'radio-button-on' : 'radio-button-off'}
                 size={20}
                 color={selectedMethod === method.id ? colors.primary[500] : colors.text.secondary}
               />
@@ -211,45 +203,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background.primary,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.semantic.containerPadding,
-    paddingVertical: spacing.semantic.inputVerticalPadding,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.primary,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    ...typography.styles.h3,
-    color: colors.text.primary,
-  },
-  headerRight: {
-    width: 40,
-  },
   content: {
     flex: 1,
-    paddingHorizontal: spacing.semantic.containerPadding,
+    paddingHorizontal: 16,
   },
   section: {
-    marginVertical: spacing.semantic.formSectionSpacing,
+    marginVertical: 20,
   },
   sectionTitle: {
-    ...typography.styles.h4,
+    fontSize: 18,
+    fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: spacing.semantic.formFieldSpacing,
+    marginBottom: 12,
+    fontFamily: 'System',
   },
   currencyCard: {
     backgroundColor: colors.background.secondary,
     borderRadius: 12,
-    padding: spacing.semantic.cardPadding,
-    marginRight: spacing.semantic.cardGap,
+    padding: 16,
+    marginRight: 12,
     minWidth: 100,
     alignItems: 'center',
     borderWidth: 1,
@@ -260,16 +232,19 @@ const styles = StyleSheet.create({
     borderColor: colors.primary[500],
   },
   currencyCode: {
-    ...typography.styles.h4,
+    fontSize: 16,
+    fontWeight: '600',
     color: colors.text.primary,
-    marginBottom: spacing[2],
+    marginBottom: 4,
+    fontFamily: 'System',
   },
   selectedCurrencyCode: {
     color: colors.text.inverse,
   },
   currencyBalance: {
-    ...typography.styles.bodySmall,
+    fontSize: 12,
     color: colors.text.secondary,
+    fontFamily: 'System',
   },
   selectedCurrencyBalance: {
     color: colors.text.inverse,
@@ -279,25 +254,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.background.secondary,
     borderRadius: 12,
-    paddingHorizontal: spacing.semantic.inputPadding,
+    paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: colors.border.primary,
   },
   amountInput: {
     flex: 1,
-    ...typography.styles.h3,
+    fontSize: 20,
+    fontWeight: '600',
     color: colors.text.primary,
-    paddingVertical: spacing.semantic.inputVerticalPadding,
+    paddingVertical: 16,
+    fontFamily: 'System',
   },
   currencyLabel: {
-    ...typography.styles.h4,
+    fontSize: 16,
     color: colors.text.secondary,
-    marginLeft: spacing.semantic.inputGap,
+    marginLeft: 12,
+    fontFamily: 'System',
   },
   balanceText: {
-    ...typography.styles.bodySmall,
+    fontSize: 12,
     color: colors.text.secondary,
-    marginTop: spacing[2],
+    marginTop: 8,
+    fontFamily: 'System',
   },
   methodCard: {
     flexDirection: 'row',
@@ -305,8 +284,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: colors.background.secondary,
     borderRadius: 12,
-    padding: spacing.semantic.cardPadding,
-    marginBottom: spacing.semantic.cardGap,
+    padding: 16,
+    marginBottom: 12,
     borderWidth: 1,
     borderColor: colors.border.primary,
   },
@@ -320,28 +299,30 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   methodDetails: {
-    marginLeft: spacing.semantic.buttonGap,
+    marginLeft: 12,
     flex: 1,
   },
   methodName: {
-    ...typography.styles.body,
+    fontSize: 16,
     color: colors.text.primary,
-    marginBottom: spacing[2],
+    marginBottom: 4,
+    fontFamily: 'System',
   },
   selectedMethodName: {
     color: colors.primary[500],
   },
   methodFee: {
-    ...typography.styles.bodySmall,
+    fontSize: 12,
     color: colors.text.secondary,
+    fontFamily: 'System',
   },
   summarySection: {
-    marginVertical: spacing.semantic.formSectionSpacing,
+    marginVertical: 20,
   },
   summaryCard: {
     backgroundColor: colors.background.secondary,
     borderRadius: 12,
-    padding: spacing.semantic.cardPadding,
+    padding: 16,
     borderWidth: 1,
     borderColor: colors.border.primary,
   },
@@ -349,47 +330,55 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: spacing[2],
+    paddingVertical: 8,
   },
   summaryLabel: {
-    ...typography.styles.body,
+    fontSize: 16,
     color: colors.text.secondary,
+    fontFamily: 'System',
   },
   summaryValue: {
-    ...typography.styles.body,
+    fontSize: 16,
     color: colors.text.primary,
+    fontFamily: 'System',
   },
   totalRow: {
     borderTopWidth: 1,
     borderTopColor: colors.border.primary,
-    marginTop: spacing.semantic.cardGap,
-    paddingTop: spacing.semantic.cardGap,
+    marginTop: 12,
+    paddingTop: 12,
   },
   totalLabel: {
-    ...typography.styles.h4,
+    fontSize: 16,
+    fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'System',
   },
   totalValue: {
-    ...typography.styles.h4,
+    fontSize: 16,
+    fontWeight: '600',
     color: colors.status.success,
+    fontFamily: 'System',
   },
   footer: {
-    padding: spacing.semantic.containerPadding,
+    padding: 16,
     borderTopWidth: 1,
     borderTopColor: colors.border.primary,
   },
   withdrawButton: {
     backgroundColor: colors.primary[500],
     borderRadius: 12,
-    paddingVertical: spacing.semantic.buttonPadding,
+    paddingVertical: 16,
     alignItems: 'center',
   },
   disabledButton: {
     backgroundColor: colors.text.tertiary,
   },
   withdrawButtonText: {
-    ...typography.styles.h4,
+    fontSize: 16,
+    fontWeight: '600',
     color: colors.text.inverse,
+    fontFamily: 'System',
   },
 });
 

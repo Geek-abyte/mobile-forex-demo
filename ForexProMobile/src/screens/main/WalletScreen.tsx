@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { colors, typography, spacing } from '../../theme';
 import { MainStackParamList } from '../../navigation/MainNavigator';
+import StandardHeader from '../../components/molecules/StandardHeader';
 
 interface Balance {
   currency: string;
@@ -186,6 +187,8 @@ const WalletScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StandardHeader title="Wallet" />
+      
       <ScrollView
         style={styles.scrollView}
         refreshControl={
@@ -197,10 +200,6 @@ const WalletScreen: React.FC = () => {
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Wallet</Text>
-        </View>
 
         {/* Portfolio Summary */}
         <View style={styles.portfolioCard}>
@@ -295,8 +294,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[4],
     borderBottomWidth: 1,
     borderBottomColor: colors.border.primary,
   },

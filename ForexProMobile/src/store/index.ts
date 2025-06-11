@@ -9,13 +9,14 @@ import tradingSlice from './slices/tradingSlice';
 import walletSlice from './slices/walletSlice';
 import p2pSlice from './slices/p2pSlice';
 import marketSlice from './slices/marketSlice';
+import notificationSlice from './slices/notificationSlice';
 
 // Persist configuration
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   whitelist: ['ui', 'auth', 'trading', 'wallet'], // Persist core state
-  blacklist: ['p2p', 'market'], // Don't persist real-time data
+  blacklist: ['p2p', 'market', 'notifications'], // Don't persist real-time data
 };
 
 // Root reducer
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   wallet: walletSlice,
   p2p: p2pSlice,
   market: marketSlice,
+  notifications: notificationSlice,
 });
 
 // Persisted reducer

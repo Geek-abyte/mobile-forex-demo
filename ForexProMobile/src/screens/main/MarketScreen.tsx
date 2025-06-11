@@ -18,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, typography, spacing } from '../../theme';
 import { MainTabParamList } from '../../navigation/MainNavigator';
+import StandardHeader from '../../components/molecules/StandardHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -358,17 +359,9 @@ const MarketScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <LinearGradient
-        colors={[colors.background.primary, colors.background.secondary]}
-        style={styles.gradient}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Markets</Text>
-          <TouchableOpacity style={styles.searchButton}>
-            <Ionicons name="search-outline" size={24} color={colors.text.primary} />
-          </TouchableOpacity>
-        </View>
+      <StandardHeader title="Markets" />
+      
+      <View style={styles.content}>
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
@@ -436,7 +429,7 @@ const MarketScreen: React.FC = () => {
             ))}
           </View>
         </ScrollView>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -446,18 +439,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background.primary,
   },
-  gradient: {
-    flex: 1,
-  },
   header: {
-    padding: spacing[4],
-    paddingBottom: spacing[2],
+    paddingHorizontal: spacing[6],
+    paddingVertical: spacing[4],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.primary,
   },
   headerTitle: {
-    fontSize: typography.sizes['3xl'],
+    fontSize: typography.sizes.xl,
     fontWeight: typography.weights.bold,
     color: colors.text.primary,
-    textAlign: 'center',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -674,10 +665,6 @@ const styles = StyleSheet.create({
   newsTimestamp: {
     fontSize: typography.sizes.xs,
     color: colors.text.secondary,
-  },
-  searchButton: {
-    marginLeft: spacing[2],
-    padding: spacing[2],
   },
   impactBadge: {
     paddingHorizontal: spacing[2],

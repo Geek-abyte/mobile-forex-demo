@@ -9,7 +9,7 @@ import { colors, typography } from '../theme';
 // Import main screens (will create them next)
 import DashboardScreen from '../screens/main/DashboardScreen';
 import TradingScreen from '../screens/main/TradingScreen';
-import WalletScreen from '../screens/wallet/WalletScreen';
+import WalletScreen from '../screens/main/WalletScreen';
 import P2PScreen from '../screens/main/P2PScreen';
 import MarketScreen from '../screens/main/MarketScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
@@ -25,6 +25,8 @@ import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 import RiskManagementScreen from '../screens/trading/RiskManagementScreen';
 import CreateP2POrderScreen from '../screens/p2p/CreateP2POrderScreen';
 import P2PTradeExecutionScreen from '../screens/p2p/P2PTradeExecutionScreen';
+import NotificationSettingsScreen from '../screens/profile/NotificationSettingsScreen';
+import NotificationDemoScreen from '../screens/profile/NotificationDemoScreen';
 
 export type MainTabParamList = {
   Dashboard: undefined;
@@ -48,6 +50,8 @@ export type MainStackParamList = {
   RiskManagement: undefined;
   CreateP2POrder: undefined;
   P2PTradeExecution: { order: any; tradeType: 'buy' | 'sell' };
+  NotificationSettings: undefined;
+  NotificationDemo: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -261,6 +265,22 @@ const MainNavigator: React.FC = () => {
         options={{
           gestureEnabled: true,
           title: 'Execute Trade',
+        }}
+      />
+      <Stack.Screen
+        name="NotificationSettings"
+        component={NotificationSettingsScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Notification Settings',
+        }}
+      />
+      <Stack.Screen
+        name="NotificationDemo"
+        component={NotificationDemoScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Notification Demo',
         }}
       />
     </Stack.Navigator>

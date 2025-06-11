@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { colors, typography, spacing } from '../../theme';
 import { MainStackParamList } from '../../navigation/MainNavigator';
+import StandardHeader from '../../components/molecules/StandardHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -208,23 +209,9 @@ const P2PTradingScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <LinearGradient
-        colors={[colors.background.primary, colors.background.secondary]}
-        style={styles.gradient}
-      >
+      <View style={styles.content}>
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>P2P Trading</Text>
-          <TouchableOpacity style={styles.historyButton}>
-            <Ionicons name="time-outline" size={24} color={colors.text.primary} />
-          </TouchableOpacity>
-        </View>
+        <StandardHeader title="P2P Trading" />
 
         {/* Tab Selector */}
         <View style={styles.tabContainer}>
@@ -305,14 +292,11 @@ const P2PTradingScreen: React.FC = () => {
           style={styles.createOrderFab}
           onPress={() => navigation.navigate('CreateP2POrder')}
         >
-          <LinearGradient
-            colors={[colors.primary[500], colors.secondary[500]]}
-            style={styles.fabGradient}
-          >
+          <View style={styles.fabGradient}>
             <Ionicons name="add" size={24} color={colors.text.primary} />
-          </LinearGradient>
+          </View>
         </TouchableOpacity>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -320,42 +304,14 @@ const P2PTradingScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background.primary,
   },
-  gradient: {
+  content: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing[6], // 24px
-    paddingVertical: spacing[4], // 16px
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.bold,
-    color: colors.text.primary,
-  },
-  historyButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 12,
     padding: 4,
     marginHorizontal: spacing[6], // 24px
@@ -385,7 +341,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 12,
     paddingHorizontal: spacing[4], // 16px
     paddingVertical: spacing[3], // 12px
@@ -401,7 +357,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   filterTag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 20,
     paddingHorizontal: spacing[4], // 16px
     paddingVertical: spacing[1], // 4px
@@ -426,12 +382,12 @@ const styles = StyleSheet.create({
     paddingBottom: spacing[16], // 64px
   },
   orderCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     padding: spacing[6], // 24px
     marginBottom: spacing[4], // 16px
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border.primary,
   },
   orderHeader: {
     flexDirection: 'row',
@@ -476,7 +432,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   orderTypeContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 8,
     paddingHorizontal: spacing[3], // 12px
     paddingVertical: spacing[1], // 4px
@@ -537,7 +493,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4], // 16px
   },
   paymentMethodTag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 12,
     paddingHorizontal: spacing[3], // 12px
     paddingVertical: spacing[1], // 4px
@@ -602,6 +558,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 28,
+    backgroundColor: colors.primary[500],
     alignItems: 'center',
     justifyContent: 'center',
   },

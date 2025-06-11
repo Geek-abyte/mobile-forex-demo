@@ -13,6 +13,7 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { colors, typography, spacing } from '../../theme';
+import StandardHeader from '../../components/molecules/StandardHeader';
 import PerformanceChart from '../../components/organisms/PerformanceChart';
 import PortfolioBreakdown from '../../components/organisms/PortfolioBreakdown';
 import TradingAnalytics from '../../components/organisms/TradingAnalytics';
@@ -228,9 +229,8 @@ const AnalyticsScreen: React.FC = () => {
     change?: string;
     changeColor?: string;
     icon: string;
-    gradient: readonly [string, string, ...string[]];
-  }> = ({ title, value, change, changeColor, icon, gradient }) => (
-    <LinearGradient colors={gradient} style={styles.metricCard}>
+  }> = ({ title, value, change, changeColor, icon }) => (
+    <View style={styles.metricCard}>
       <View style={styles.metricHeader}>
         <View style={styles.metricIconContainer}>
           <Ionicons name={icon as any} size={24} color={colors.text.primary} />
@@ -243,7 +243,7 @@ const AnalyticsScreen: React.FC = () => {
           {change}
         </Text>
       )}
-    </LinearGradient>
+    </View>
   );
 
   const RiskBar: React.FC<{
@@ -276,26 +276,18 @@ const AnalyticsScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <LinearGradient
-        colors={[colors.background.primary, colors.background.secondary]}
-        style={styles.gradient}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Portfolio Analytics</Text>
-          <TouchableOpacity style={styles.settingsButton}>
+      <StandardHeader 
+        title="Portfolio Analytics" 
+        showBackButton={true}
+        rightActions={[
+          <TouchableOpacity key="settings" style={styles.settingsButton}>
             <Ionicons name="settings-outline" size={24} color={colors.text.primary} />
           </TouchableOpacity>
-        </View>
+        ]}
+      />
 
-        <ScrollView
-          style={styles.content}
+      <ScrollView
+        style={styles.content}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -331,7 +323,6 @@ const AnalyticsScreen: React.FC = () => {
               change={`+${performanceMetrics.totalReturnPercent}%`}
               changeColor={colors.trading.profit}
               icon="trending-up"
-              gradient={[colors.primary[500], colors.secondary[500]] as const}
             />
             <MetricCard
               title="Today's P&L"
@@ -339,7 +330,6 @@ const AnalyticsScreen: React.FC = () => {
               change={`+${performanceMetrics.todayPnLPercent}%`}
               changeColor={colors.trading.profit}
               icon="stats-chart"
-              gradient={[colors.trading.profit, colors.primary[500]] as const}
             />
           </View>
 
@@ -350,7 +340,6 @@ const AnalyticsScreen: React.FC = () => {
               change={`${performanceMetrics.winningTrades}/${performanceMetrics.totalTrades} trades`}
               changeColor={colors.text.secondary}
               icon="trophy"
-              gradient={[colors.trading.warning, colors.secondary[500]] as const}
             />
             <MetricCard
               title="Profit Factor"
@@ -358,7 +347,6 @@ const AnalyticsScreen: React.FC = () => {
               change="Excellent"
               changeColor={colors.trading.profit}
               icon="calculator"
-              gradient={[colors.secondary[500], colors.primary[500]] as const}
             />
           </View>
 
@@ -484,7 +472,6 @@ const AnalyticsScreen: React.FC = () => {
 
           <View style={styles.bottomPadding} />
         </ScrollView>
-      </LinearGradient>
     </SafeAreaView>
   );
 };
@@ -492,36 +479,13 @@ const AnalyticsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  gradient: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing[6], // 24px
-    paddingVertical: spacing[4], // 16px
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: typography.sizes.lg,
-    fontWeight: typography.weights.bold,
-    color: colors.text.primary,
+    backgroundColor: colors.background.primary,
   },
   settingsButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -531,7 +495,7 @@ const styles = StyleSheet.create({
   },
   timeframeContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 12,
     padding: 4,
     marginBottom: spacing[8], // 32px
@@ -567,6 +531,7 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     flex: 1,
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     padding: spacing[6], // 24px
     marginHorizontal: spacing[1], // 4px
@@ -580,7 +545,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing[3], // 12px
@@ -601,7 +566,7 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.medium,
   },
   riskCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     padding: spacing[6], // 24px
     marginBottom: spacing[6], // 24px
@@ -651,7 +616,7 @@ const styles = StyleSheet.create({
   },
   riskBarTrack: {
     height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -660,7 +625,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   advancedMetricsContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     padding: spacing[6], // 24px
   },
@@ -670,7 +635,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[3], // 12px
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: colors.border.primary,
   },
   advancedMetricLabel: {
     fontSize: typography.sizes.sm,
@@ -685,11 +650,11 @@ const styles = StyleSheet.create({
   chartContainer: {
     height: 200,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.background.tertiary,
     marginBottom: spacing[6], // 24px
   },
   breakdownContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     padding: spacing[6], // 24px
     marginBottom: spacing[6], // 24px
@@ -700,7 +665,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[3], // 12px
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: colors.border.primary,
   },
   breakdownCurrency: {
     fontSize: typography.sizes.sm,
@@ -720,7 +685,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   tradeHistoryContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.secondary,
     borderRadius: 16,
     padding: spacing[6], // 24px
   },
@@ -730,7 +695,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[3], // 12px
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: colors.border.primary,
   },
   tradeHistoryDate: {
     fontSize: typography.sizes.sm,

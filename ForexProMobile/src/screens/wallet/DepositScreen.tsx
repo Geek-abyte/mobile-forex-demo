@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { colors, typography, spacing } from '../../theme';
 
 const { width } = Dimensions.get('window');
@@ -34,6 +35,7 @@ interface CurrencyOption {
 }
 
 const DepositScreen: React.FC = () => {
+  const navigation = useNavigation();
   const [selectedMethod, setSelectedMethod] = useState<string>('bank_transfer');
   const [selectedCurrency, setSelectedCurrency] = useState<string>('USD');
   const [amount, setAmount] = useState('');
@@ -161,8 +163,17 @@ const DepositScreen: React.FC = () => {
         
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Deposit Funds</Text>
-          <Text style={styles.headerSubtitle}>Add money to your trading account</Text>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
+          </TouchableOpacity>
+          <View style={styles.headerContent}>
+            <Text style={styles.headerTitle}>Deposit Funds</Text>
+            <Text style={styles.headerSubtitle}>Add money to your trading account</Text>
+          </View>
+          <View style={styles.placeholder} />
         </View>
 
         {/* Currency Selection */}
@@ -354,10 +365,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
     borderBottomColor: colors.border.primary,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.background.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing[3],
+  },
+  headerContent: {
+    flex: 1,
+  },
+  placeholder: {
+    width: 40,
   },
   headerTitle: {
     fontSize: typography.sizes['2xl'],

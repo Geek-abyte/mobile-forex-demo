@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { colors, typography, spacing } from '../../theme';
 
 interface Transaction {
@@ -28,6 +29,7 @@ interface Transaction {
 }
 
 const TransactionHistoryScreen: React.FC = () => {
+  const navigation = useNavigation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'deposit' | 'withdrawal' | 'trade'>('all');
@@ -292,7 +294,14 @@ const TransactionHistoryScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Transaction History</Text>
+        <View style={styles.placeholder} />
       </View>
 
       {/* Summary */}
@@ -388,12 +397,27 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.primary,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     borderBottomWidth: 1,
     borderBottomColor: colors.border.primary,
   },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.background.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing[3],
+  },
+  placeholder: {
+    width: 40,
+  },
   headerTitle: {
+    flex: 1,
     fontSize: typography.sizes.xl,
     fontFamily: typography.fonts.primary,
     fontWeight: typography.weights.bold,

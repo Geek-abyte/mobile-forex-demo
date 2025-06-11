@@ -20,6 +20,7 @@ import { tradingService } from '../../services/tradingService';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../../navigation/MainNavigator';
+import NotificationBell from '../../components/atoms/NotificationBell';
 
 const { width } = Dimensions.get('window');
 
@@ -174,10 +175,11 @@ const DashboardScreen: React.FC = () => {
             <Text style={styles.userNameText}>{user?.firstName || 'Trader'}</Text>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.notificationButton}>
-              <Ionicons name="notifications-outline" size={24} color={colors.text.primary} />
-              <View style={styles.notificationBadge} />
-            </TouchableOpacity>
+            <NotificationBell 
+              size={24} 
+              color={colors.text.primary}
+              showBadge={true}
+            />
             <TouchableOpacity 
               style={styles.profileButton} 
               onPress={() => navigation.navigate('Profile' as never)}
@@ -240,17 +242,14 @@ const DashboardScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           <View style={styles.actionsGrid}>
             <TouchableOpacity 
-              style={[styles.actionCard, styles.primaryAction]}
+              style={styles.actionCard}
               onPress={() => navigation.navigate('Trading' as never)}
             >
-              <LinearGradient
-                colors={['#00D4AA', '#00A085']}
-                style={styles.actionGradient}
-              >
-                <MaterialIcons name="trending-up" size={28} color="white" />
+              <View style={styles.actionContent}>
+                <MaterialIcons name="trending-up" size={28} color={colors.primary[500]} />
                 <Text style={styles.actionTitle}>Trade</Text>
                 <Text style={styles.actionSubtitle}>Start Trading</Text>
-              </LinearGradient>
+              </View>
             </TouchableOpacity>
 
             <TouchableOpacity 
@@ -560,15 +559,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
   },
-  primaryAction: {
-    marginBottom: spacing[3],
-  },
-  actionGradient: {
-    flex: 1,
-    padding: spacing[4],
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   actionContent: {
     flex: 1,
     padding: spacing[4],
@@ -579,14 +569,14 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.primary,
-    color: 'white',
+    color: colors.text.primary,
     fontWeight: typography.weights.bold,
     marginTop: spacing[2],
   },
   actionSubtitle: {
     fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.primary,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: colors.text.secondary,
     fontWeight: typography.weights.medium,
     marginTop: spacing[1],
   },

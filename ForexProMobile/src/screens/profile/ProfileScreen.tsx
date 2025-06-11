@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { logout } from '../../store/slices/authSlice';
 import { colors, typography, spacing } from '../../theme';
+import StandardHeader from '../../components/molecules/StandardHeader';
 
 const { width } = Dimensions.get('window');
 
@@ -201,11 +202,9 @@ const ProfileScreen: React.FC = () => {
     {
       icon: 'notifications-outline',
       iconBg: colors.status.warning,
-      title: 'Push Notifications',
-      subtitle: 'Trading alerts and market updates',
-      type: 'switch',
-      value: notificationsEnabled,
-      onValueChange: setNotificationsEnabled,
+      title: 'Notification Settings',
+      subtitle: 'Manage all notification preferences',
+      onPress: () => navigation.navigate('NotificationSettings' as never),
     },
     {
       icon: 'moon-outline',
@@ -226,6 +225,13 @@ const ProfileScreen: React.FC = () => {
   ];
 
   const supportSettings = [
+    {
+      icon: 'notifications-active',
+      iconBg: colors.primary[500],
+      title: 'Notification Demo',
+      subtitle: 'Test all notification types',
+      onPress: () => navigation.navigate('NotificationDemo' as never),
+    },
     {
       icon: 'help-circle-outline',
       iconBg: colors.status.info,
@@ -275,6 +281,8 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <StandardHeader title="Profile" />
+      
       <ScrollView showsVerticalScrollIndicator={false}>
         {renderProfileHeader()}
         

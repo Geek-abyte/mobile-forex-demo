@@ -10,6 +10,7 @@ import {
   setOnboardingCompleted,
 } from '@/store/slices/authSlice';
 import { authService, LoginCredentials, RegisterData } from '@/services/authService';
+import NotificationIntegration from '@/services/notificationIntegration';
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +28,11 @@ export const useAuth = () => {
       dispatch(loginStart());
       const response = await authService.login(credentials);
       dispatch(loginSuccess(response));
+      
+      // Trigger login notification
+      const userName = response.user?.firstName || response.user?.email;
+      await NotificationIntegration.onUserLogin(userName);
+      
       return response;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Login failed';
@@ -52,9 +58,13 @@ export const useAuth = () => {
     try {
       await authService.logout();
       dispatch(logoutAction());
+      
+      // Handle logout notifications
+      NotificationIntegration.onUserLogout();
     } catch (error) {
       // Even if logout fails on server, clear local state
       dispatch(logoutAction());
+      NotificationIntegration.onUserLogout();
     }
   }, [dispatch]);
 

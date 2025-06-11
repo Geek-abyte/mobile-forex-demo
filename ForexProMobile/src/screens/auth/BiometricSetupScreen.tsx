@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
+import StandardHeader from '../../components/molecules/StandardHeader';
 
 const { width, height } = Dimensions.get('window');
 
@@ -65,18 +66,19 @@ const BiometricSetupScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[colors.background.primary, colors.background.secondary]}
-        style={styles.gradient}
-      >
-        <View style={styles.header}>
-          <TouchableOpacity 
-            style={styles.skipButton}
-            onPress={handleSkip}
-          >
-            <Text style={styles.skipText}>Skip</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.content}>
+        <StandardHeader 
+          title=""
+          rightActions={[
+            <TouchableOpacity 
+              key="skip"
+              style={styles.skipButton}
+              onPress={handleSkip}
+            >
+              <Text style={styles.skipText}>Skip</Text>
+            </TouchableOpacity>
+          ]}
+        />
 
         <View style={styles.content}>
           <View style={styles.iconContainer}>
@@ -130,13 +132,7 @@ const BiometricSetupScreen: React.FC = () => {
             onPress={handleBiometricSetup}
             disabled={isSetupComplete}
           >
-            <LinearGradient
-              colors={isSetupComplete ? 
-                [colors.status.success, colors.trading.profit] : 
-                [colors.primary[500], colors.primary[400]]
-              }
-              style={styles.setupButtonGradient}
-            >
+            <View style={[styles.setupButtonContent, isSetupComplete && styles.setupButtonCompleteContent]}>
               <Ionicons 
                 name={isSetupComplete ? "checkmark" : "finger-print"} 
                 size={24} 
@@ -145,7 +141,7 @@ const BiometricSetupScreen: React.FC = () => {
               <Text style={styles.setupButtonText}>
                 {isSetupComplete ? 'Setup Complete' : 'Set Up Biometric'}
               </Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -155,7 +151,7 @@ const BiometricSetupScreen: React.FC = () => {
             <Text style={styles.laterButtonText}>I'll do this later</Text>
           </TouchableOpacity>
         </View>
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -164,15 +160,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background.primary,
-  },
-  gradient: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: spacing[6],
-    paddingTop: spacing[4],
   },
   skipButton: {
     paddingHorizontal: spacing[4],
@@ -277,17 +264,22 @@ const styles = StyleSheet.create({
   setupButton: {
     borderRadius: 12,
     marginBottom: spacing[4],
+    backgroundColor: colors.primary[500],
     overflow: 'hidden',
   },
   setupButtonComplete: {
+    backgroundColor: colors.status.success,
     opacity: 0.8,
   },
-  setupButtonGradient: {
+  setupButtonContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing[4],
     paddingHorizontal: spacing[6],
+  },
+  setupButtonCompleteContent: {
+    backgroundColor: 'transparent',
   },
   setupButtonText: {
     fontSize: typography.sizes.lg,
