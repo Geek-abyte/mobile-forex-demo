@@ -33,7 +33,7 @@ interface PriceData {
   };
 }
 
-const TradingScreen: React.FC = () => {
+const TradingScreenProfessional: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const route = useRoute<RouteProp<MainTabParamList, 'Trading'>>();
   
@@ -1183,4 +1183,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TradingScreen;
+export default TradingScreenProfessional;

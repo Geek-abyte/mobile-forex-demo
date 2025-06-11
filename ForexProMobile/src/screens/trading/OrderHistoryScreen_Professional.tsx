@@ -48,7 +48,7 @@ interface TradingSummary {
   worstTrade: number;
 }
 
-const OrderHistoryScreen: React.FC = () => {
+const OrderHistoryScreenProfessional: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [filter, setFilter] = useState<OrderFilter>({
@@ -793,4 +793,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderHistoryScreen;
+export default OrderHistoryScreenProfessional;
