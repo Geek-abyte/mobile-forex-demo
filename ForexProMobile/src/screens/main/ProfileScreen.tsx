@@ -5,7 +5,7 @@ import { colors, typography, spacing } from '../../theme';
 
 const ProfileScreen: React.FC = () => {
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.content}>
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.subtitle}>Coming Soon</Text>

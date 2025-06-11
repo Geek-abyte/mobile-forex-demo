@@ -207,7 +207,7 @@ const P2PTradingScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <LinearGradient
         colors={[colors.background.primary, colors.background.secondary]}
         style={styles.gradient}

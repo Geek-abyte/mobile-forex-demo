@@ -11,7 +11,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import theme from '../../theme';
 import ProfessionalTradingChart from '../../components/organisms/ProfessionalTradingChart';
@@ -100,6 +100,7 @@ const CollapsiblePanel: React.FC<CollapsiblePanelProps> = ({
 };
 
 const ChartScreen: React.FC = () => {
+  const insets = useSafeAreaInsets();
   const [selectedSymbol, setSelectedSymbol] = useState('EURUSD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1H');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -277,7 +278,7 @@ const ChartScreen: React.FC = () => {
 
         {/* Floating Action Buttons */}
         {!isFullscreen && (
-          <View style={styles.fabContainer}>
+          <View style={[styles.fabContainer, { bottom: spacing[6] + insets.bottom }]}>
             <FloatingActionButton
               icon="trending-up"
               onPress={() => setShowTradeModal(true)}
@@ -501,7 +502,6 @@ const styles = StyleSheet.create({
   fabContainer: {
     position: 'absolute',
     right: spacing[4],
-    bottom: spacing[6],
     alignItems: 'center',
   },
   fab: {

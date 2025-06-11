@@ -357,7 +357,7 @@ const MarketScreen: React.FC = () => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <LinearGradient
         colors={[colors.background.primary, colors.background.secondary]}
         style={styles.gradient}
@@ -383,35 +383,32 @@ const MarketScreen: React.FC = () => {
         </View>
 
         {/* Category Tabs */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.categoryContainer}
-          contentContainerStyle={styles.categoryContent}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.key}
-              style={[
-                styles.categoryTab,
-                activeCategory === category.key && styles.activeCategoryTab
-              ]}
-              onPress={() => setActiveCategory(category.key)}
-            >
-              <Ionicons 
-                name={category.icon as any} 
-                size={16} 
-                color={activeCategory === category.key ? colors.text.primary : colors.text.secondary} 
-              />
-              <Text style={[
-                styles.categoryText,
-                activeCategory === category.key && styles.activeCategoryText
-              ]}>
-                {category.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={styles.categoryContainer}>
+          <View style={styles.categoryTabsRow}>
+            {categories.map((category) => (
+              <TouchableOpacity
+                key={category.key}
+                style={[
+                  styles.categoryTab,
+                  activeCategory === category.key && styles.activeCategoryTab
+                ]}
+                onPress={() => setActiveCategory(category.key)}
+              >
+                <Ionicons 
+                  name={category.icon as any} 
+                  size={16} 
+                  color={activeCategory === category.key ? colors.text.primary : colors.text.secondary} 
+                />
+                <Text style={[
+                  styles.categoryText,
+                  activeCategory === category.key && styles.activeCategoryText
+                ]}>
+                  {category.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
 
         <ScrollView 
           style={styles.content}
@@ -480,19 +477,26 @@ const styles = StyleSheet.create({
   },
   categoryContainer: {
     marginBottom: spacing[2],
+    paddingHorizontal: spacing[4],
+  },
+  categoryTabsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: spacing[2],
   },
   categoryContent: {
     paddingHorizontal: spacing[4],
   },
   categoryTab: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: colors.background.tertiary,
-    paddingHorizontal: spacing[3],
+    paddingHorizontal: spacing[2],
     paddingVertical: spacing[1],
-    borderRadius: 16,
-    marginRight: spacing[2],
-    minHeight: 32,
+    borderRadius: 8,
+    height: 36,
   },
   activeCategoryTab: {
     backgroundColor: colors.primary[500],
@@ -500,7 +504,7 @@ const styles = StyleSheet.create({
   categoryText: {
     marginLeft: spacing[1],
     fontSize: typography.sizes.xs,
-    fontWeight: typography.weights.medium,
+    fontWeight: typography.weights.semibold,
     color: colors.text.secondary,
   },
   activeCategoryText: {
