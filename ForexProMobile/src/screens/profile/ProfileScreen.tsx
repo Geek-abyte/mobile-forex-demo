@@ -164,28 +164,28 @@ const ProfileScreen: React.FC = () => {
       iconBg: colors.primary[500],
       title: 'Personal Information',
       subtitle: 'Edit your personal details',
-      onPress: () => Alert.alert('Info', 'Personal Information editing not implemented yet'),
+      onPress: () => navigation.navigate('PersonalInformation' as never),
     },
     {
       icon: 'shield-checkmark-outline',
       iconBg: colors.status.success,
       title: 'Security & Privacy',
       subtitle: 'Password, 2FA, privacy settings',
-      onPress: () => Alert.alert('Info', 'Security settings not implemented yet'),
+      onPress: () => navigation.navigate('SecurityPrivacy' as never),
     },
     {
       icon: 'card-outline',
       iconBg: colors.secondary[500],
       title: 'Payment Methods',
       subtitle: 'Manage your payment options',
-      onPress: () => navigation.navigate('DepositScreen' as never),
+      onPress: () => navigation.navigate('Deposit' as never),
     },
     {
       icon: 'document-text-outline',
       iconBg: colors.status.info,
       title: 'Trading History',
       subtitle: 'View your complete trading history',
-      onPress: () => navigation.navigate('TransactionHistoryScreen' as never),
+      onPress: () => navigation.navigate('TransactionHistory' as never),
     },
   ];
 
@@ -220,7 +220,7 @@ const ProfileScreen: React.FC = () => {
       iconBg: colors.status.info,
       title: 'Language',
       subtitle: 'English (US)',
-      onPress: () => Alert.alert('Info', 'Language selection not implemented yet'),
+      onPress: () => navigation.navigate('LanguageSettings' as never),
     },
   ];
 
@@ -237,21 +237,21 @@ const ProfileScreen: React.FC = () => {
       iconBg: colors.status.info,
       title: 'Help & Support',
       subtitle: 'Get help with your account',
-      onPress: () => Alert.alert('Info', 'Support not implemented yet'),
+      onPress: () => navigation.navigate('HelpSupport' as never),
     },
     {
       icon: 'document-outline',
       iconBg: colors.text.secondary,
       title: 'Terms & Conditions',
       subtitle: 'Read our terms of service',
-      onPress: () => Alert.alert('Info', 'Terms & Conditions not implemented yet'),
+      onPress: () => navigation.navigate('TermsConditions' as never),
     },
     {
       icon: 'shield-outline',
       iconBg: colors.text.secondary,
       title: 'Privacy Policy',
       subtitle: 'How we handle your data',
-      onPress: () => Alert.alert('Info', 'Privacy Policy not implemented yet'),
+      onPress: () => navigation.navigate('PrivacyPolicy' as never),
     },
     {
       icon: 'information-circle-outline',

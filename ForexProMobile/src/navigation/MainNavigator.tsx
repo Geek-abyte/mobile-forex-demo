@@ -27,6 +27,12 @@ import CreateP2POrderScreen from '../screens/p2p/CreateP2POrderScreen';
 import P2PTradeExecutionScreen from '../screens/p2p/P2PTradeExecutionScreen';
 import NotificationSettingsScreen from '../screens/profile/NotificationSettingsScreen';
 import NotificationDemoScreen from '../screens/profile/NotificationDemoScreen';
+import PersonalInformationScreen from '../screens/profile/PersonalInformationScreen';
+import SecurityPrivacyScreen from '../screens/profile/SecurityPrivacyScreen';
+import LanguageSettingsScreen from '../screens/profile/LanguageSettingsScreen';
+import HelpSupportScreen from '../screens/profile/HelpSupportScreen';
+import TermsConditionsScreen from '../screens/profile/TermsConditionsScreen';
+import PrivacyPolicyScreen from '../screens/profile/PrivacyPolicyScreen';
 
 export type MainTabParamList = {
   Dashboard: undefined;
@@ -52,6 +58,12 @@ export type MainStackParamList = {
   P2PTradeExecution: { order: any; tradeType: 'buy' | 'sell' };
   NotificationSettings: undefined;
   NotificationDemo: undefined;
+  PersonalInformation: undefined;
+  SecurityPrivacy: undefined;
+  LanguageSettings: undefined;
+  HelpSupport: undefined;
+  TermsConditions: undefined;
+  PrivacyPolicy: undefined;
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -281,6 +293,54 @@ const MainNavigator: React.FC = () => {
         options={{
           gestureEnabled: true,
           title: 'Notification Demo',
+        }}
+      />
+      <Stack.Screen
+        name="PersonalInformation"
+        component={PersonalInformationScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Personal Information',
+        }}
+      />
+      <Stack.Screen
+        name="SecurityPrivacy"
+        component={SecurityPrivacyScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Security & Privacy',
+        }}
+      />
+      <Stack.Screen
+        name="LanguageSettings"
+        component={LanguageSettingsScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Language Settings',
+        }}
+      />
+      <Stack.Screen
+        name="HelpSupport"
+        component={HelpSupportScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Help & Support',
+        }}
+      />
+      <Stack.Screen
+        name="TermsConditions"
+        component={TermsConditionsScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Terms & Conditions',
+        }}
+      />
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Privacy Policy',
         }}
       />
     </Stack.Navigator>
