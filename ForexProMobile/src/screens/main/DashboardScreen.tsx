@@ -17,21 +17,13 @@ import { useAuth } from '../../hooks/useAuth';
 import { marketDataService, CurrencyPair } from '../../services/marketDataService';
 import { marketAnalysisService, MarketAlert } from '../../services/marketAnalysisService';
 import { tradingService } from '../../services/tradingService';
+import { accountService, AccountSummary } from '../../services/accountService';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../../navigation/MainNavigator';
 import NotificationBell from '../../components/atoms/NotificationBell';
 
 const { width } = Dimensions.get('window');
-
-interface AccountSummary {
-  balance: number;
-  equity: number;
-  freeMargin: number;
-  todayProfit: number;
-  totalProfit: number;
-  openPositions: number;
-}
 
 interface Position {
   id: string;
@@ -48,21 +40,18 @@ const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
   const { user } = useAuth();
   const [refreshing, setRefreshing] = useState(false);
-  const [accountSummary, setAccountSummary] = useState<AccountSummary>({
-    balance: 50000,
-    equity: 52150,
-    freeMargin: 48200,
-    todayProfit: 1250,
-    totalProfit: 2150,
-    openPositions: 3,
-  });
+  const [accountSummary, setAccountSummary] = useState<AccountSummary>(accountService.getAccountSummary());
   const [topPairs, setTopPairs] = useState<CurrencyPair[]>([]);
   const [marketAlerts, setMarketAlerts] = useState<MarketAlert[]>([]);
   const [positions, setPositions] = useState<Position[]>([]);
 
   useEffect(() => {
     loadDashboardData();
-    const interval = setInterval(loadDashboardData, 30000); // Update every 30 seconds
+    const interval = setInterval(() => {
+      // Update account data from service
+      setAccountSummary(accountService.getAccountSummary());
+      loadDashboardData();
+    }, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
   }, []);
 
@@ -105,12 +94,8 @@ const DashboardScreen: React.FC = () => {
       }));
       setPositions(formattedPositions);
 
-      // Simulate account data updates
-      setAccountSummary(prev => ({
-        ...prev,
-        todayProfit: prev.todayProfit + (Math.random() - 0.5) * 100,
-        balance: 50000 + prev.todayProfit,
-      }));
+      // Update account summary from centralized service
+      setAccountSummary(accountService.getAccountSummary());
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     }

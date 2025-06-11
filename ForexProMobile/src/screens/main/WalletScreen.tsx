@@ -14,27 +14,12 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { colors, typography, spacing } from '../../theme';
 import { MainStackParamList } from '../../navigation/MainNavigator';
+import { accountService, AccountBalance, RecentTransaction } from '../../services/accountService';
 import StandardHeader from '../../components/molecules/StandardHeader';
-
-interface Balance {
-  currency: string;
-  available: number;
-  locked: number;
-  total: number;
-}
-
-interface RecentTransaction {
-  id: string;
-  type: 'deposit' | 'withdrawal' | 'trade';
-  amount: number;
-  currency: string;
-  timestamp: number;
-  status: 'completed' | 'pending' | 'failed';
-}
 
 const WalletScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-  const [balances, setBalances] = useState<Balance[]>([]);
+  const [balances, setBalances] = useState<AccountBalance[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<RecentTransaction[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [portfolioValue, setPortfolioValue] = useState(0);
@@ -42,67 +27,41 @@ const WalletScreen: React.FC = () => {
 
   useEffect(() => {
     loadWalletData();
+    
+    // Set up interval to update data from centralized service
+    const interval = setInterval(() => {
+      const updatedBalances = accountService.getBalances();
+      const updatedTransactions = accountService.getRecentTransactions();
+      const updatedPortfolioValue = accountService.getTotalPortfolioValue();
+      
+      setBalances(updatedBalances);
+      setRecentTransactions(updatedTransactions);
+      setPortfolioValue(updatedPortfolioValue);
+    }, 10000); // Update every 10 seconds
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadWalletData = async () => {
     setIsLoading(true);
     
-    // Mock wallet data
-    const mockBalances: Balance[] = [
-      {
-        currency: 'USD',
-        available: 8250.50,
-        locked: 1749.50,
-        total: 10000.00,
-      },
-      {
-        currency: 'EUR',
-        available: 450.25,
-        locked: 49.75,
-        total: 500.00,
-      },
-      {
-        currency: 'GBP',
-        available: 195.80,
-        locked: 4.20,
-        total: 200.00,
-      },
-    ];
-
-    const mockRecentTransactions: RecentTransaction[] = [
-      {
-        id: '1',
-        type: 'deposit',
-        amount: 1000,
-        currency: 'USD',
-        timestamp: Date.now() - 3600000,
-        status: 'completed',
-      },
-      {
-        id: '2',
-        type: 'trade',
-        amount: -150.50,
-        currency: 'USD',
-        timestamp: Date.now() - 7200000,
-        status: 'completed',
-      },
-      {
-        id: '3',
-        type: 'withdrawal',
-        amount: -500,
-        currency: 'USD',
-        timestamp: Date.now() - 10800000,
-        status: 'pending',
-      },
-    ];
-
-    setTimeout(() => {
-      setBalances(mockBalances);
-      setRecentTransactions(mockRecentTransactions);
-      setPortfolioValue(mockBalances.reduce((sum, balance) => sum + balance.total, 0));
+    try {
+      // Get data from centralized account service
+      const balances = accountService.getBalances();
+      const transactions = accountService.getRecentTransactions();
+      const totalValue = accountService.getTotalPortfolioValue();
+      
+      setBalances(balances);
+      setRecentTransactions(transactions);
+      setPortfolioValue(totalValue);
       setDailyChange(Math.random() * 400 - 200); // Random daily change for demo
+      
+      console.log('WalletScreen - Loaded portfolio value:', totalValue);
+    } catch (error) {
+      console.error('Error loading wallet data:', error);
+    } finally {
       setIsLoading(false);
-    }, 500);
+    }
   };
 
   const formatCurrency = (amount: number, currency: string) => {
@@ -131,7 +90,7 @@ const WalletScreen: React.FC = () => {
     return colors.trading.loss;
   };
 
-  const renderBalance = ({ item }: { item: Balance }) => (
+  const renderBalance = ({ item }: { item: AccountBalance }) => (
     <View style={styles.balanceCard}>
       <View style={styles.balanceHeader}>
         <Text style={styles.balanceCurrency}>{item.currency}</Text>
