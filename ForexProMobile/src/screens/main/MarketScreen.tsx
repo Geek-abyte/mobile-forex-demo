@@ -19,6 +19,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, typography, spacing } from '../../theme';
 import { MainTabParamList } from '../../navigation/MainNavigator';
 import StandardHeader from '../../components/molecules/StandardHeader';
+import TutorialHelpButton from '../../components/molecules/TutorialHelpButton';
 
 const { width } = Dimensions.get('window');
 
@@ -430,6 +431,9 @@ const MarketScreen: React.FC = () => {
           </View>
         </ScrollView>
       </View>
+      
+      {/* Tutorial Help Button */}
+      <TutorialHelpButton screenName="Market" />
     </SafeAreaView>
   );
 };

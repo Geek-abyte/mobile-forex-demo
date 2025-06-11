@@ -23,6 +23,7 @@ import { enhancedTradingService } from '../../services/enhancedTradingService';
 import TradingViewProfessionalChart, { CandlestickData } from '../../components/organisms/TradingViewProfessionalChart';
 import { tradingViewDataService } from '../../services/tradingViewDataService';
 import { MainStackParamList } from '../../navigation/MainNavigator';
+import TutorialHelpButton from '../../components/molecules/TutorialHelpButton';
 
 const { width, height } = Dimensions.get('window');
 
@@ -782,6 +783,9 @@ const TradingScreen: React.FC = () => {
           </View>
         </TouchableOpacity>
       </Modal>
+      
+      {/* Tutorial Help Button */}
+      <TutorialHelpButton screenName="Trading" />
     </SafeAreaView>
   );
 };

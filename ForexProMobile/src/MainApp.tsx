@@ -2,6 +2,9 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AppNavigator from '@/navigation/AppNavigator';
 import FloatingNotification from '@/components/organisms/FloatingNotification';
+import TutorialManager from '@/components/organisms/TutorialManager';
+import TutorialDevTools from '@/components/molecules/TutorialDevTools';
+import { TutorialProvider } from '@/contexts/TutorialContext';
 import NotificationIntegration from '@/services/notificationIntegration';
 import { notificationManager } from '@/services/notificationManager';
 import { useAppSelector } from '@/store/hooks';
@@ -37,13 +40,19 @@ const MainApp: React.FC = () => {
   }, [isAuthenticated]); // React to authentication state changes
 
   return (
-    <View style={styles.container}>
-      <AppNavigator />
-      {/* Only show floating notifications when user is authenticated */}
-      {isAuthenticated && (
-        <FloatingNotification position="top" maxVisible={1} />
-      )}
-    </View>
+    <TutorialProvider>
+      <View style={styles.container}>
+        <AppNavigator />
+        {/* Only show floating notifications when user is authenticated */}
+        {isAuthenticated && (
+          <FloatingNotification position="top" maxVisible={1} />
+        )}
+        {/* Tutorial system - only shows when authenticated */}
+        {isAuthenticated && <TutorialManager />}
+        {/* Development tools for testing tutorial */}
+        {isAuthenticated && <TutorialDevTools />}
+      </View>
+    </TutorialProvider>
   );
 };
 

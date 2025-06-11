@@ -20,6 +20,7 @@ import { tradingService } from '../../services/tradingService';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../../navigation/MainNavigator';
+import TutorialHelpButton from '../../components/molecules/TutorialHelpButton';
 
 const { width } = Dimensions.get('window');
 
@@ -403,6 +404,9 @@ const DashboardScreen: React.FC = () => {
         {/* Bottom Padding */}
         <View style={styles.bottomPadding} />
       </ScrollView>
+      
+      {/* Tutorial Help Button */}
+      <TutorialHelpButton screenName="Dashboard" />
     </SafeAreaView>
   );
 };

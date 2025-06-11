@@ -18,17 +18,39 @@ import { RootState } from '../../store';
 import { logout } from '../../store/slices/authSlice';
 import { colors, typography, spacing } from '../../theme';
 import StandardHeader from '../../components/molecules/StandardHeader';
+import TutorialProgress from '../../components/organisms/TutorialProgress';
+import { useTutorial } from '../../contexts/TutorialContext';
 
 const { width } = Dimensions.get('window');
 
 const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { startTutorial, resetTutorial } = useTutorial();
   const [biometricEnabled, setBiometricEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(true);
   
   const { user } = useSelector((state: RootState) => state.auth);
+
+  const handleRestartTutorial = () => {
+    Alert.alert(
+      'Restart Tutorial',
+      'This will reset your tutorial progress and show the welcome screen again. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Restart',
+          onPress: () => {
+            resetTutorial();
+            setTimeout(() => {
+              startTutorial();
+            }, 500);
+          },
+        },
+      ]
+    );
+  };
 
   const handleLogout = () => {
     Alert.alert(
@@ -222,6 +244,13 @@ const ProfileScreen: React.FC = () => {
       subtitle: 'English (US)',
       onPress: () => navigation.navigate('LanguageSettings' as never),
     },
+    {
+      icon: 'school-outline',
+      iconBg: colors.primary[500],
+      title: 'Restart Tutorial',
+      subtitle: 'Show the welcome tutorial again',
+      onPress: handleRestartTutorial,
+    },
   ];
 
   const supportSettings = [
@@ -286,6 +315,11 @@ const ProfileScreen: React.FC = () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {renderProfileHeader()}
         
+        {/* Tutorial Progress */}
+        <View style={styles.tutorialSection}>
+          <TutorialProgress />
+        </View>
+        
         {renderSettingsSection('Account', accountSettings)}
         {renderSettingsSection('App Settings', appSettings)}
         {renderSettingsSection('Support', supportSettings)}
@@ -305,6 +339,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background.primary,
+  },
+  tutorialSection: {
+    paddingHorizontal: spacing[4],
+    marginBottom: spacing[4],
   },
   profileHeader: {
     marginBottom: spacing[6],
