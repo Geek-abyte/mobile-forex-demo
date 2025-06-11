@@ -83,7 +83,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         }
         #container {
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 40px);
             position: relative;
         }
         #chart {

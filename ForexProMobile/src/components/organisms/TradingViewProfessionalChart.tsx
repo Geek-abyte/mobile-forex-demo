@@ -107,6 +107,7 @@ const ProfessionalTradingChart: React.FC<ProfessionalTradingChartProps> = ({
             // Draw candlesticks
             if (chartData && chartData.length > 0) {
                 const padding = 60;
+                const bottomPadding = 80; // Extra padding for bottom elements
                 const candleWidth = Math.max(3, (canvas.width - 2 * padding) / chartData.length);
                 
                 // Find price range
@@ -122,10 +123,10 @@ const ProfessionalTradingChart: React.FC<ProfessionalTradingChartProps> = ({
                 
                 chartData.forEach((candle, index) => {
                     const x = padding + index * candleWidth;
-                    const high = padding + (maxPrice - candle.high) / adjustedRange * (canvas.height - 2 * padding);
-                    const low = padding + (maxPrice - candle.low) / adjustedRange * (canvas.height - 2 * padding);
-                    const open = padding + (maxPrice - candle.open) / adjustedRange * (canvas.height - 2 * padding);
-                    const close = padding + (maxPrice - candle.close) / adjustedRange * (canvas.height - 2 * padding);
+                    const high = padding + (maxPrice - candle.high) / adjustedRange * (canvas.height - padding - bottomPadding);
+                    const low = padding + (maxPrice - candle.low) / adjustedRange * (canvas.height - padding - bottomPadding);
+                    const open = padding + (maxPrice - candle.open) / adjustedRange * (canvas.height - padding - bottomPadding);
+                    const close = padding + (maxPrice - candle.close) / adjustedRange * (canvas.height - padding - bottomPadding);
                     
                     // Determine color
                     const isBullish = candle.close >= candle.open;
@@ -173,7 +174,7 @@ const ProfessionalTradingChart: React.FC<ProfessionalTradingChartProps> = ({
                 const priceSteps = 5;
                 for (let i = 0; i <= priceSteps; i++) {
                     const priceLevel = minPrice + (adjustedRange * i / priceSteps);
-                    const y = padding + (maxPrice - priceLevel) / adjustedRange * (canvas.height - 2 * padding);
+                    const y = padding + (maxPrice - priceLevel) / adjustedRange * (canvas.height - padding - bottomPadding);
                     ctx.fillText(priceLevel.toFixed(4), canvas.width - 55, y + 4);
                     
                     // Draw horizontal price lines
@@ -190,8 +191,8 @@ const ProfessionalTradingChart: React.FC<ProfessionalTradingChartProps> = ({
                 // Draw volume bars if available
                 if (chartData[0]?.volume) {
                     const maxVolume = Math.max(...chartData.map(d => d.volume || 0));
-                    const volumeHeight = 60;
-                    const volumeY = canvas.height - volumeHeight - 10;
+                    const volumeHeight = 50; // Reduced height to fit better
+                    const volumeY = canvas.height - bottomPadding + 10; // Position within bottom padding area
                     
                     chartData.forEach((candle, index) => {
                         if (candle.volume) {

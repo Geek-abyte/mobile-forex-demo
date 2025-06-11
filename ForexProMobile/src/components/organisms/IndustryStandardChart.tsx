@@ -73,7 +73,7 @@ const IndustryStandardChart: React.FC<IndustryStandardChartProps> = ({
         
         #chart-container {
             width: 100vw;
-            height: ${isFullscreen ? '100vh' : chartHeight + 'px'};
+            height: ${isFullscreen ? 'calc(100vh - 40px)' : chartHeight + 'px'};
             position: relative;
             background: ${colors.background.primary};
             overflow: hidden;

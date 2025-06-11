@@ -63,7 +63,7 @@ const BasicTradingChart: React.FC<BasicTradingChartProps> = ({
             background-color: ${colors.background.primary};
             overflow: hidden;
             width: 100vw;
-            height: 100vh;
+            height: calc(100vh - 40px);
         }
         #container {
             width: 100%;

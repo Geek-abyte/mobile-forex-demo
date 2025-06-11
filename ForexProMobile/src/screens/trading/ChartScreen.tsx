@@ -14,10 +14,9 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import theme from '../../theme';
-import ProfessionalTradingChart from '../../components/organisms/ProfessionalTradingChart';
+import ProfessionalTradingChart, { type CandlestickData } from '../../components/organisms/ProfessionalTradingChart';
 import { enhancedTradingService } from '../../services/enhancedTradingService';
 import { realisticMarketSimulation } from '../../services/realisticMarketSimulation';
-import type { CandleData } from '../../components/organisms/ProfessionalTradingChart';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -110,7 +109,22 @@ const ChartScreen: React.FC = () => {
   const [showIndicatorsModal, setShowIndicatorsModal] = useState(false);
   const [isWatchlistCollapsed, setIsWatchlistCollapsed] = useState(true);
   const [currentPrice, setCurrentPrice] = useState(1.0952);
-  const [chartData, setChartData] = useState<CandleData[]>([]);
+  const [chartData, setChartData] = useState<CandlestickData[]>([]);
+  
+  // Chart options state - lifted up to maintain consistency between modes
+  const [chartOptions, setChartOptions] = useState({
+    volume: false,
+    gridLines: true,
+    crosshair: true,
+    timeScale: true,
+    priceScale: true,
+    sma20: false,
+    sma50: false,
+    ema21: false,
+    bollinger: false,
+    rsi: false,
+    macd: false,
+  });
 
   // Sidebar animation
   const sidebarTranslateX = useRef(new Animated.Value(-screenWidth * 0.8)).current;
@@ -118,8 +132,19 @@ const ChartScreen: React.FC = () => {
 
   useEffect(() => {
     // Initialize chart data
-    const data = realisticMarketSimulation.generateHistoricalData(selectedSymbol, selectedTimeframe, 100);
-    setChartData(data);
+    const rawData = realisticMarketSimulation.generateHistoricalData(selectedSymbol, selectedTimeframe, 100);
+    
+    // Transform CandleData to CandlestickData format
+    const transformedData = rawData.map(candle => ({
+      time: candle.timestamp / 1000, // Convert timestamp to seconds for LightweightCharts
+      open: candle.open,
+      high: candle.high,
+      low: candle.low,
+      close: candle.close,
+      volume: candle.volume
+    }));
+    
+    setChartData(transformedData);
     
     // Start real-time price updates
     const interval = setInterval(() => {
@@ -231,11 +256,12 @@ const ChartScreen: React.FC = () => {
           <ProfessionalTradingChart
             symbol={selectedSymbol}
             data={chartData}
-            currentPrice={currentPrice}
+            timeframe={selectedTimeframe}
             onTimeframeChange={setSelectedTimeframe}
-            selectedTimeframe={selectedTimeframe}
             isFullscreen={isFullscreen}
-            onFullscreenToggle={toggleFullscreen}
+            onFullscreenChange={setIsFullscreen}
+            chartOptions={chartOptions}
+            onChartOptionsChange={setChartOptions}
           />
 
           {/* Floating Controls */}
