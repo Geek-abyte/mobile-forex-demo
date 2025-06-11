@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { colors, typography, spacing } from '../../theme';
 import { tradingService, TradeRequest, Position } from '../../services/tradingService';
@@ -21,7 +21,7 @@ import { enhancedTradingService } from '../../services/enhancedTradingService';
 import { marketDataService } from '../../services/marketDataService';
 import TradingViewProfessionalChart, { CandlestickData } from '../../components/organisms/TradingViewProfessionalChart';
 import { realisticMarketSimulation } from '../../services/realisticMarketSimulation';
-import { MainStackParamList } from '../../navigation/MainNavigator';
+import { MainStackParamList, MainTabParamList } from '../../navigation/MainNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -36,8 +36,14 @@ interface PriceData {
 
 const TradingScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-  const [selectedPair, setSelectedPair] = useState('EUR/USD');
-  const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
+  const route = useRoute<RouteProp<MainTabParamList, 'Trading'>>();
+  
+  // Get navigation parameters
+  const initialSymbol = route.params?.symbol || 'EUR/USD';
+  const initialTradeType = route.params?.type || 'buy';
+  
+  const [selectedPair, setSelectedPair] = useState(initialSymbol);
+  const [tradeType, setTradeType] = useState<'buy' | 'sell'>(initialTradeType);
   const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
   const [tradeSize, setTradeSize] = useState('1000');
   const [limitPrice, setLimitPrice] = useState('');
@@ -298,6 +304,13 @@ const TradingScreen: React.FC = () => {
             >
               <Ionicons name="time-outline" size={20} color={colors.primary[500]} />
               <Text style={styles.headerButtonText}>History</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.headerButton}
+              onPress={() => navigation.navigate('RiskManagement')}
+            >
+              <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary[500]} />
+              <Text style={styles.headerButtonText}>Risk</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.refreshButton}>
               <Ionicons name="refresh" size={20} color={colors.primary[500]} />

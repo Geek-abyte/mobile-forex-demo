@@ -14,7 +14,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { colors, typography, spacing } from '../../theme';
+import { MainStackParamList } from '../../navigation/MainNavigator';
 
 const { width } = Dimensions.get('window');
 
@@ -45,7 +47,7 @@ interface FilterOptions {
 }
 
 const P2PTradingScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const [activeTab, setActiveTab] = useState<'buy' | 'sell'>('buy');
   const [orders, setOrders] = useState<P2POrder[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<P2POrder[]>([]);
@@ -128,20 +130,10 @@ const P2PTradingScreen: React.FC = () => {
   };
 
   const handleTradePress = (order: P2POrder) => {
-    Alert.alert(
-      'Start P2P Trade',
-      `Do you want to ${activeTab} ${order.currency} from ${order.username}?\n\nPrice: ${order.price.toFixed(4)}\nLimits: $${order.minOrder} - $${order.maxOrder}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Continue', 
-          onPress: () => {
-            // Navigate to trade execution screen
-            console.log('Starting P2P trade with order:', order.id);
-          }
-        },
-      ]
-    );
+    navigation.navigate('P2PTradeExecution' as any, {
+      order,
+      tradeType: activeTab,
+    });
   };
 
   const OrderCard: React.FC<{ order: P2POrder }> = ({ order }) => (
@@ -309,7 +301,10 @@ const P2PTradingScreen: React.FC = () => {
         />
 
         {/* Create Order FAB */}
-        <TouchableOpacity style={styles.createOrderFab}>
+        <TouchableOpacity 
+          style={styles.createOrderFab}
+          onPress={() => navigation.navigate('CreateP2POrder')}
+        >
           <LinearGradient
             colors={[colors.primary[500], colors.secondary[500]]}
             style={styles.fabGradient}

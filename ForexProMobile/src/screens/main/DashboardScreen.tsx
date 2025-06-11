@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, typography, spacing } from '../../theme';
 import { useAuth } from '../../hooks/useAuth';
 import { marketDataService, CurrencyPair } from '../../services/marketDataService';
+import { marketAnalysisService, MarketAlert } from '../../services/marketAnalysisService';
 import { tradingService } from '../../services/tradingService';
 import { useNavigation } from '@react-navigation/native';
 
@@ -23,6 +24,7 @@ const DashboardScreen: React.FC = () => {
   const { user, logout } = useAuth();
   const navigation = useNavigation();
   const [currencyPairs, setCurrencyPairs] = useState<CurrencyPair[]>([]);
+  const [marketAlerts, setMarketAlerts] = useState<MarketAlert[]>([]);
   const [accountSummary, setAccountSummary] = useState({
     balance: 10000,
     equity: 10000,
@@ -47,11 +49,13 @@ const DashboardScreen: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const [pairs, summary] = await Promise.all([
+      const [pairs, summary, alerts] = await Promise.all([
         marketDataService.getCurrencyPairs(),
         tradingService.getAccountSummary(),
+        marketAnalysisService.getMarketAlerts(),
       ]);
       setCurrencyPairs(pairs.slice(0, 8));
+      setMarketAlerts(alerts.slice(0, 3)); // Show top 3 alerts
       setAccountSummary({
         ...summary,
         totalProfit: 247.85,
@@ -112,10 +116,44 @@ const DashboardScreen: React.FC = () => {
 
   const getMarketTrendColor = () => {
     switch (marketTrend) {
-      case 'bullish': return colors.trading.profit;
-      case 'bearish': return colors.trading.loss;
+      case 'bullish': return colors.status.success;
+      case 'bearish': return colors.status.error;
       default: return colors.text.secondary;
     }
+  };
+
+  const getAlertIcon = (type: string) => {
+    switch (type) {
+      case 'price': return 'trending-up';
+      case 'technical': return 'analytics';
+      case 'news': return 'newspaper';
+      case 'volatility': return 'warning';
+      default: return 'alert-circle';
+    }
+  };
+
+  const getAlertColor = (severity: string) => {
+    switch (severity) {
+      case 'low': return colors.status.info;
+      case 'medium': return colors.status.warning;
+      case 'high': return colors.status.error;
+      default: return colors.text.secondary;
+    }
+  };
+
+  const formatAlertTime = (timestamp: Date): string => {
+    const now = new Date();
+    const diff = now.getTime() - timestamp.getTime();
+    const minutes = Math.floor(diff / 60000);
+    
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
   };
 
   return (
@@ -217,6 +255,40 @@ const DashboardScreen: React.FC = () => {
             </View>
           </TouchableOpacity>
         </View>
+
+        {/* Market Alerts */}
+        {marketAlerts.length > 0 && (
+          <View style={styles.alertsCard}>
+            <View style={styles.alertsHeader}>
+              <Text style={styles.cardTitle}>Market Alerts</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('RiskManagement' as never)}>
+                <Text style={styles.viewAllText}>View All</Text>
+              </TouchableOpacity>
+            </View>
+            {marketAlerts.map((alert, index) => (
+              <View key={alert.id} style={styles.alertItem}>
+                <View style={styles.alertIconContainer}>
+                  <Ionicons 
+                    name={getAlertIcon(alert.type)} 
+                    size={16} 
+                    color={getAlertColor(alert.severity)} 
+                  />
+                </View>
+                <View style={styles.alertContent}>
+                  <Text style={styles.alertTitle}>{alert.title}</Text>
+                  <Text style={styles.alertMessage} numberOfLines={1}>{alert.message}</Text>
+                  <Text style={styles.alertTime}>
+                    {formatAlertTime(alert.timestamp)}
+                  </Text>
+                </View>
+                <View style={[
+                  styles.severityIndicator,
+                  { backgroundColor: getAlertColor(alert.severity) }
+                ]} />
+              </View>
+            ))}
+          </View>
+        )}
 
         {/* Market Overview */}
         <View style={styles.marketCard}>
@@ -427,6 +499,65 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.semibold,
     color: 'white',
   },
+  alertsCard: {
+    backgroundColor: colors.background.secondary,
+    marginHorizontal: spacing[6],
+    marginBottom: spacing[6],
+    borderRadius: 16,
+    padding: spacing[6],
+  },
+  alertsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing[4],
+  },
+  alertItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: spacing[3],
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.secondary,
+    gap: spacing[3],
+  },
+  alertIconContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: colors.background.tertiary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing[1],
+  },
+  alertContent: {
+    flex: 1,
+  },
+  alertTitle: {
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fonts.primary,
+    fontWeight: typography.weights.semibold,
+    color: colors.text.primary,
+    marginBottom: spacing[1],
+  },
+  alertMessage: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.primary,
+    fontWeight: typography.weights.regular,
+    color: colors.text.secondary,
+    marginBottom: spacing[1],
+  },
+  alertTime: {
+    fontSize: typography.sizes.xs,
+    fontFamily: typography.fonts.primary,
+    fontWeight: typography.weights.regular,
+    color: colors.text.tertiary,
+  },
+  severityIndicator: {
+    width: 4,
+    height: 16,
+    borderRadius: 2,
+    marginTop: spacing[1],
+  },
   marketCard: {
     backgroundColor: colors.background.secondary,
     marginHorizontal: spacing[6],
@@ -573,7 +704,7 @@ const styles = StyleSheet.create({
     gap: spacing[3],
   },
   demoText: {
-    fontSize: typography.sizes.sm,
+    fontSize: typography.sizes.xs,
     fontFamily: typography.fonts.primary,
     fontWeight: typography.weights.medium,
     color: colors.text.secondary,

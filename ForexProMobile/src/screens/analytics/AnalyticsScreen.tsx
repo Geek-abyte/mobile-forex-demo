@@ -6,12 +6,16 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { colors, typography, spacing } from '../../theme';
+import PerformanceChart from '../../components/organisms/PerformanceChart';
+import PortfolioBreakdown from '../../components/organisms/PortfolioBreakdown';
+import TradingAnalytics from '../../components/organisms/TradingAnalytics';
 
 const { width } = Dimensions.get('window');
 
@@ -43,9 +47,25 @@ interface RiskMetrics {
   volatility: number;
 }
 
+interface PortfolioBreakdown {
+  currency: string;
+  allocation: number;
+  value: number;
+  change24h: number;
+  change24hPercent: number;
+}
+
+interface TradeHistory {
+  date: string;
+  pnl: number;
+  cumulativePnL: number;
+}
+
 const AnalyticsScreen: React.FC = () => {
   const navigation = useNavigation();
   const [timeframe, setTimeframe] = useState<'1D' | '1W' | '1M' | '3M' | '1Y'>('1M');
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics>({
     totalReturn: 2547.80,
     totalReturnPercent: 12.74,
@@ -73,6 +93,126 @@ const AnalyticsScreen: React.FC = () => {
     volatility: 15.4,
     marginLevel: 659.2,
   });
+
+  const [portfolioBreakdown, setPortfolioBreakdown] = useState<PortfolioBreakdown[]>([
+    { currency: 'USD', allocation: 0.35, value: 7892, change24h: 89, change24hPercent: 1.14 },
+    { currency: 'EUR', allocation: 0.28, value: 6313, change24h: -125, change24hPercent: -1.94 },
+    { currency: 'GBP', allocation: 0.18, value: 4058, change24h: 67, change24hPercent: 1.68 },
+    { currency: 'JPY', allocation: 0.12, value: 2706, change24h: 23, change24hPercent: 0.86 },
+    { currency: 'AUD', allocation: 0.07, value: 1578, change24h: -34, change24hPercent: -2.11 },
+  ]);
+
+  const [tradeHistory, setTradeHistory] = useState<TradeHistory[]>([
+    { date: '2025-06-04', pnl: 125, cumulativePnL: 22423 },
+    { date: '2025-06-05', pnl: -89, cumulativePnL: 22334 },
+    { date: '2025-06-06', pnl: 234, cumulativePnL: 22568 },
+    { date: '2025-06-07', pnl: -156, cumulativePnL: 22412 },
+    { date: '2025-06-08', pnl: 89, cumulativePnL: 22501 },
+    { date: '2025-06-09', pnl: 178, cumulativePnL: 22679 },
+    { date: '2025-06-10', pnl: -132, cumulativePnL: 22547 },
+  ]);
+
+  const [tradingAnalyticsData] = useState([
+    {
+      period: '1W',
+      totalTrades: 12,
+      winningTrades: 8,
+      losingTrades: 4,
+      winRate: 66.7,
+      totalPnL: 347,
+      averageWin: 89.5,
+      averageLoss: -45.2,
+      profitFactor: 1.98,
+      largestWin: 234,
+      largestLoss: -89,
+      averageHoldTime: '4h 32m',
+    },
+    {
+      period: '1M',
+      totalTrades: 58,
+      winningTrades: 39,
+      losingTrades: 19,
+      winRate: 67.2,
+      totalPnL: 2547,
+      averageWin: 156.3,
+      averageLoss: -89.4,
+      profitFactor: 1.75,
+      largestWin: 892,
+      largestLoss: -234,
+      averageHoldTime: '6h 15m',
+    },
+    {
+      period: '3M',
+      totalTrades: 147,
+      winningTrades: 101,
+      losingTrades: 46,
+      winRate: 68.7,
+      totalPnL: 5234,
+      averageWin: 145.8,
+      averageLoss: -78.9,
+      profitFactor: 1.85,
+      largestWin: 1245,
+      largestLoss: -456,
+      averageHoldTime: '5h 48m',
+    },
+  ]);
+
+  const [selectedAnalyticsPeriod, setSelectedAnalyticsPeriod] = useState('1M');
+
+  useEffect(() => {
+    loadAnalyticsData();
+  }, [timeframe]);
+
+  const loadAnalyticsData = async () => {
+    setLoading(true);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Generate realistic data based on timeframe
+      generateTimeframeData();
+    } catch (error) {
+      console.error('Failed to load analytics data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const generateTimeframeData = () => {
+    const now = new Date();
+    const history: TradeHistory[] = [];
+    let baseValue = 22000;
+    
+    // Generate data points based on timeframe
+    const dataPoints = timeframe === '1D' ? 24 : 
+                      timeframe === '1W' ? 7 : 
+                      timeframe === '1M' ? 30 : 
+                      timeframe === '3M' ? 90 : 365;
+    
+    const intervalMs = timeframe === '1D' ? 60 * 60 * 1000 : // 1 hour
+                      timeframe === '1W' ? 24 * 60 * 60 * 1000 : // 1 day
+                      24 * 60 * 60 * 1000; // 1 day for others
+    
+    for (let i = dataPoints - 1; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * intervalMs);
+      const pnl = (Math.random() - 0.5) * 400; // Random P&L between -200 and +200
+      baseValue += pnl;
+      
+      history.push({
+        date: date.toISOString().split('T')[0],
+        pnl: Math.round(pnl),
+        cumulativePnL: Math.round(baseValue),
+      });
+    }
+    
+    setTradeHistory(history);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadAnalyticsData();
+    setRefreshing(false);
+  };
 
   const timeframes = [
     { key: '1D' as const, label: '1D' },
@@ -154,7 +294,13 @@ const AnalyticsScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
           {/* Timeframe Selector */}
           <View style={styles.timeframeContainer}>
             {timeframes.map((tf) => (
@@ -287,6 +433,53 @@ const AnalyticsScreen: React.FC = () => {
                 {riskMetrics.marginLevel.toFixed(1)}%
               </Text>
             </View>
+          </View>
+
+          {/* Performance Chart */}
+          <PerformanceChart
+            data={tradeHistory.map(trade => ({
+              date: trade.date,
+              value: trade.cumulativePnL,
+              change: trade.pnl,
+            }))}
+            timeframe={timeframe}
+            onTimeframeChange={(tf) => setTimeframe(tf as '1D' | '1W' | '1M' | '3M' | '1Y')}
+            title="Portfolio Performance"
+            valueFormatter={(value) => `$${value.toLocaleString()}`}
+            color={colors.primary[500]}
+          />
+
+          {/* Portfolio Breakdown */}
+          <PortfolioBreakdown
+            data={portfolioBreakdown.map(item => ({
+              currency: item.currency,
+              allocation: item.allocation * 100, // Convert to percentage
+              value: item.value,
+              change24h: item.change24h,
+              change24hPercent: item.change24hPercent,
+            }))}
+            totalValue={riskMetrics.portfolioValue}
+          />
+
+          {/* Trading Analytics */}
+          <TradingAnalytics
+            data={tradingAnalyticsData}
+            selectedPeriod={selectedAnalyticsPeriod}
+            onPeriodChange={setSelectedAnalyticsPeriod}
+          />
+
+          {/* Trade History */}
+          <Text style={styles.sectionTitle}>Trade History</Text>
+          <View style={styles.tradeHistoryContainer}>
+            {tradeHistory.map((trade) => (
+              <View key={trade.date} style={styles.tradeHistoryItem}>
+                <Text style={styles.tradeHistoryDate}>{trade.date}</Text>
+                <Text style={styles.tradeHistoryPnL}>${trade.pnl}</Text>
+                <Text style={styles.tradeHistoryCumulativePnL}>
+                  ${trade.cumulativePnL}
+                </Text>
+              </View>
+            ))}
           </View>
 
           <View style={styles.bottomPadding} />
@@ -488,6 +681,68 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.sm,
     color: colors.text.primary,
     fontWeight: typography.weights.semibold,
+  },
+  chartContainer: {
+    height: 200,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginBottom: spacing[6], // 24px
+  },
+  breakdownContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 16,
+    padding: spacing[6], // 24px
+    marginBottom: spacing[6], // 24px
+  },
+  breakdownItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing[3], // 12px
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  breakdownCurrency: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.primary,
+    fontWeight: typography.weights.medium,
+  },
+  breakdownAllocation: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.secondary,
+  },
+  breakdownValue: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.primary,
+  },
+  breakdownChange: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.secondary,
+  },
+  tradeHistoryContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 16,
+    padding: spacing[6], // 24px
+  },
+  tradeHistoryItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: spacing[3], // 12px
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  tradeHistoryDate: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.primary,
+  },
+  tradeHistoryPnL: {
+    fontSize: typography.sizes.sm,
+    color: colors.trading.profit,
+  },
+  tradeHistoryCumulativePnL: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.secondary,
   },
   bottomPadding: {
     height: spacing[16], // 64px

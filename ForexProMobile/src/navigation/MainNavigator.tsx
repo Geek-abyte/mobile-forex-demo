@@ -8,10 +8,10 @@ import { colors, typography } from '../theme';
 // Import main screens (will create them next)
 import DashboardScreen from '../screens/main/DashboardScreen';
 import TradingScreen from '../screens/main/TradingScreen';
-import WalletScreen from '../screens/main/WalletScreen';
+import WalletScreen from '../screens/wallet/WalletScreen';
 import P2PScreen from '../screens/main/P2PScreen';
 import MarketScreen from '../screens/main/MarketScreen';
-import ProfileScreen from '../screens/main/ProfileScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 // Import modal screens
 import OrderScreen from '../screens/trading/OrderScreen';
@@ -21,13 +21,17 @@ import DepositScreen from '../screens/wallet/DepositScreen';
 import WithdrawScreen from '../screens/wallet/WithdrawScreen';
 import TransactionHistoryScreen from '../screens/wallet/TransactionHistoryScreen';
 import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
+import RiskManagementScreen from '../screens/trading/RiskManagementScreen';
+import CreateP2POrderScreen from '../screens/p2p/CreateP2POrderScreen';
+import P2PTradeExecutionScreen from '../screens/p2p/P2PTradeExecutionScreen';
 
 export type MainTabParamList = {
   Dashboard: undefined;
-  Trading: undefined;
+  Trading: { symbol?: string; type?: 'buy' | 'sell' };
   Wallet: undefined;
   P2P: undefined;
   Market: undefined;
+  Profile: undefined;
 };
 
 export type MainStackParamList = {
@@ -40,6 +44,9 @@ export type MainStackParamList = {
   TransactionHistory: undefined;
   Profile: undefined;
   Analytics: undefined;
+  RiskManagement: undefined;
+  CreateP2POrder: undefined;
+  P2PTradeExecution: { order: any; tradeType: 'buy' | 'sell' };
 };
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -69,6 +76,9 @@ const MainTabs: React.FC = () => {
               break;
             case 'Market':
               iconName = 'show-chart';
+              break;
+            case 'Profile':
+              iconName = 'person';
               break;
             default:
               iconName = 'home';
@@ -127,6 +137,13 @@ const MainTabs: React.FC = () => {
         component={MarketScreen}
         options={{
           tabBarLabel: 'Markets',
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
         }}
       />
     </Tab.Navigator>
@@ -216,6 +233,31 @@ const MainNavigator: React.FC = () => {
         options={{
           gestureEnabled: true,
           title: 'Portfolio Analytics',
+        }}
+      />
+      <Stack.Screen
+        name="RiskManagement"
+        component={RiskManagementScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Risk Management',
+        }}
+      />
+      <Stack.Screen
+        name="CreateP2POrder"
+        component={CreateP2POrderScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Create P2P Order',
+          presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="P2PTradeExecution"
+        component={P2PTradeExecutionScreen}
+        options={{
+          gestureEnabled: true,
+          title: 'Execute Trade',
         }}
       />
     </Stack.Navigator>
