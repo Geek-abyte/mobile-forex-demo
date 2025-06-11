@@ -137,6 +137,11 @@ const ChartScreen: React.FC = () => {
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
 
   useEffect(() => {
+    console.log(`ChartScreen - Loading data for ${selectedSymbol} ${selectedTimeframe}`);
+    
+    // Clear any existing cache to ensure fresh data when symbol/timeframe changes
+    realisticMarketSimulation.clearCache(selectedSymbol, selectedTimeframe);
+    
     // Initialize chart data
     const rawData = realisticMarketSimulation.generateHistoricalData(selectedSymbol, selectedTimeframe, 100);
     
@@ -152,13 +157,22 @@ const ChartScreen: React.FC = () => {
     
     setChartData(transformedData);
     
+    // Set initial current price to match the last historical candle
+    const lastCandle = rawData[rawData.length - 1];
+    setCurrentPrice(lastCandle.close);
+    
+    console.log(`ChartScreen - Set initial price to ${lastCandle.close} for ${selectedSymbol}`);
+
     // Start real-time price updates
     const interval = setInterval(() => {
       const newPrice = realisticMarketSimulation.getCurrentPrice(selectedSymbol);
       setCurrentPrice(newPrice);
     }, 2000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      console.log(`ChartScreen - Cleared interval for ${selectedSymbol}`);
+    };
   }, [selectedSymbol, selectedTimeframe]);
 
   const toggleSidebar = () => {

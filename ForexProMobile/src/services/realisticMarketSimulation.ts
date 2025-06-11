@@ -32,6 +32,23 @@ interface TrendData {
 class RealisticMarketSimulation {
   private priceHistory: Map<string, CandleData[]> = new Map();
   private currentTrends: Map<string, TrendData> = new Map();
+  private basePrices: { [symbol: string]: number } = {
+    'EURUSD': 1.0850,
+    'GBPUSD': 1.2743,
+    'USDJPY': 149.85,
+    'USDCHF': 0.9123,
+    'AUDUSD': 0.6758,
+    'USDCAD': 1.3421,
+    'NZDUSD': 0.6123,
+    'EURJPY': 162.54,
+    'GBPJPY': 191.12,
+    'EURGBP': 0.8512
+  };
+  
+  // Cache for generated historical data to ensure consistency
+  private historicalDataCache: Map<string, CandleData[]> = new Map();
+  private lastUpdateTime: Map<string, number> = new Map();
+  
   private marketRegime: MarketRegime = {
     type: 'calm',
     strength: 0.3,
@@ -50,17 +67,6 @@ class RealisticMarketSimulation {
     { timestamp: Date.now() + 7200000, impact: 'medium', currency: 'EUR', description: 'ECB Press Conference' },
     { timestamp: Date.now() + 14400000, impact: 'high', currency: 'GBP', description: 'UK Employment Data' }
   ];
-
-  private basePrices: { [key: string]: number } = {
-    'EUR/USD': 1.0845,
-    'GBP/USD': 1.2734,
-    'USD/JPY': 149.87,
-    'AUD/USD': 0.6578,
-    'USD/CHF': 0.8923,
-    'USD/CAD': 1.3542,
-    'NZD/USD': 0.6123,
-    'EUR/GBP': 0.8801
-  };
 
   constructor() {
     this.initializeTrends();
@@ -190,9 +196,25 @@ class RealisticMarketSimulation {
   }
 
   generateHistoricalData(symbol: string, timeframe: string, count: number = 100): CandleData[] {
+    // Create unique cache key for this symbol-timeframe-count combination
+    const cacheKey = `${symbol}-${timeframe}-${count}`;
+    
+    // Check if we have cached data and it's still valid (less than 5 minutes old)
+    const lastUpdate = this.lastUpdateTime.get(cacheKey) || 0;
+    const now = Date.now();
+    const cacheValidDuration = 5 * 60 * 1000; // 5 minutes
+    
+    if (this.historicalDataCache.has(cacheKey) && (now - lastUpdate) < cacheValidDuration) {
+      const cachedData = this.historicalDataCache.get(cacheKey)!;
+      // Ensure current price matches the last candle's close price
+      const lastCandle = cachedData[cachedData.length - 1];
+      this.basePrices[symbol] = lastCandle.close;
+      return cachedData;
+    }
+
+    // Generate new historical data
     const data: CandleData[] = [];
     const basePrice = this.basePrices[symbol] || 1.0000;
-    const now = Date.now();
     
     const getInterval = (tf: string): number => {
       switch (tf) {
@@ -209,19 +231,22 @@ class RealisticMarketSimulation {
     const interval = getInterval(timeframe);
     let currentPrice = basePrice;
 
+    // Generate data from oldest to newest to build proper price progression
     for (let i = count - 1; i >= 0; i--) {
       const timestamp = now - (i * interval);
-      const priceChange = this.generateRealisticPriceMovement(symbol);
+      
+      // Use smaller price changes for historical data to create more realistic progression
+      const priceChange = this.generateRealisticPriceMovement(symbol) * 0.5; // Reduce volatility for historical data
       
       const open = currentPrice;
       const close = open * (1 + priceChange);
       
       // Generate realistic OHLC
-      const volatilityFactor = Math.random() * 0.5 + 0.5; // 0.5 to 1.0
-      const range = Math.abs(close - open) * (2 + volatilityFactor);
+      const volatilityFactor = Math.random() * 0.3 + 0.7; // 0.7 to 1.0 (less extreme than before)
+      const range = Math.abs(close - open) * (1 + volatilityFactor);
       
-      const high = Math.max(open, close) + (range * Math.random() * 0.3);
-      const low = Math.min(open, close) - (range * Math.random() * 0.3);
+      const high = Math.max(open, close) + (range * Math.random() * 0.2);
+      const low = Math.min(open, close) - (range * Math.random() * 0.2);
       
       // Volume correlation with price movement and time
       const priceMovementFactor = Math.abs(priceChange) * 10000;
@@ -241,11 +266,21 @@ class RealisticMarketSimulation {
       currentPrice = close;
     }
 
-    // Store for future reference
-    this.priceHistory.set(symbol, data);
-    this.basePrices[symbol] = currentPrice;
+    // Sort data by timestamp
+    const sortedData = data.sort((a, b) => a.timestamp - b.timestamp);
     
-    return data.sort((a, b) => a.timestamp - b.timestamp);
+    // Store for future reference and cache the data
+    this.priceHistory.set(symbol, sortedData);
+    this.historicalDataCache.set(cacheKey, sortedData);
+    this.lastUpdateTime.set(cacheKey, now);
+    
+    // IMPORTANT: Set the current price to match the last historical candle
+    const lastCandle = sortedData[sortedData.length - 1];
+    this.basePrices[symbol] = lastCandle.close;
+    
+    console.log(`Generated historical data for ${symbol} (${timeframe}): baseline price = ${this.basePrices[symbol]}`);
+    
+    return sortedData;
   }
 
   private getVolumeTimeOfDayFactor(timestamp: number): number {
@@ -262,15 +297,19 @@ class RealisticMarketSimulation {
   }
 
   subscribeToRealTimeData(symbol: string, callback: (data: CandleData) => void): () => void {
-    const basePrice = this.getCurrentPrice(symbol);
+    // Get the current price (should match the last historical candle)
+    const currentPrice = this.getCurrentPrice(symbol);
+    
     let currentCandle: CandleData = {
       timestamp: Date.now(),
-      open: basePrice,
-      high: basePrice,
-      low: basePrice,
-      close: basePrice,
+      open: currentPrice,
+      high: currentPrice,
+      low: currentPrice,
+      close: currentPrice,
       volume: 0,
     };
+
+    console.log(`Starting real-time data for ${symbol} from price: ${currentPrice}`);
 
     const interval = setInterval(() => {
       const priceChange = this.generateRealisticPriceMovement(symbol);
@@ -295,8 +334,10 @@ class RealisticMarketSimulation {
       currentCandle = updatedCandle;
       callback(updatedCandle);
       
-      // Update stored price
+      // Update stored price to maintain consistency
       this.basePrices[symbol] = newClose;
+      
+      console.log(`Real-time update for ${symbol}: ${newClose}`);
     }, 1000);
 
     return () => clearInterval(interval);
@@ -304,6 +345,21 @@ class RealisticMarketSimulation {
 
   getCurrentPrice(symbol: string): number {
     return this.basePrices[symbol] || 1.0000;
+  }
+
+  // Method to clear cache for a specific symbol-timeframe combination
+  clearCache(symbol?: string, timeframe?: string): void {
+    if (symbol && timeframe) {
+      const cacheKey = `${symbol}-${timeframe}-100`; // Assuming default count of 100
+      this.historicalDataCache.delete(cacheKey);
+      this.lastUpdateTime.delete(cacheKey);
+      console.log(`Cleared cache for ${symbol} ${timeframe}`);
+    } else {
+      // Clear all cache
+      this.historicalDataCache.clear();
+      this.lastUpdateTime.clear();
+      console.log('Cleared all historical data cache');
+    }
   }
 
   getBidAsk(symbol: string): { bid: number; ask: number; spread: number } {
