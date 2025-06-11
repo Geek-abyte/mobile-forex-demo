@@ -98,6 +98,14 @@ const ProfessionalTradingChart: React.FC<ProfessionalTradingChartProps> = ({
   const setChartOptions = onChartOptionsChange ? 
     (newOptions: any) => onChartOptionsChange(newOptions) :
     setInternalChartOptions;
+  
+  // Debug logging
+  useEffect(() => {
+    console.log('ProfessionalTradingChart - External chartOptions:', externalChartOptions);
+    console.log('ProfessionalTradingChart - Using chartOptions:', chartOptions);
+    console.log('ProfessionalTradingChart - isFullscreen:', isFullscreen);
+    console.log('ProfessionalTradingChart - showControls:', showControls);
+  }, [externalChartOptions, chartOptions, isFullscreen, showControls]);
     
   const screenWidth = width || Dimensions.get('window').width;
 
@@ -1053,6 +1061,22 @@ const ProfessionalTradingChart: React.FC<ProfessionalTradingChartProps> = ({
         </View>
       )}
 
+      {/* Fullscreen Floating Tools Button - Always visible in fullscreen */}
+      {isFullscreen && (
+        <View style={styles.fullscreenFloatingControls}>
+          <TouchableOpacity
+            style={[styles.floatingToolsButton, showToolsMenu && styles.floatingToolsButtonActive]}
+            onPress={() => setShowToolsMenu(!showToolsMenu)}
+          >
+            <Ionicons 
+              name="options" 
+              size={20} 
+              color={showToolsMenu ? colors.text.inverse : colors.text.primary} 
+            />
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Tools Menu Modal */}
       <Modal
         visible={showToolsMenu}
@@ -1506,6 +1530,32 @@ const styles = StyleSheet.create({
   },
   timeframeGridButtonTextActive: {
     color: colors.text.inverse,
+  },
+  // Fullscreen Floating Controls
+  fullscreenFloatingControls: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    zIndex: 1000,
+  },
+  floatingToolsButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.background.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
+  },
+  floatingToolsButtonActive: {
+    backgroundColor: colors.primary[500],
+    borderColor: colors.primary[500],
   },
 });
 

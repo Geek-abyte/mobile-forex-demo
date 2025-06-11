@@ -126,6 +126,12 @@ const ChartScreen: React.FC = () => {
     macd: false,
   });
 
+  // Debug logging for chart options
+  useEffect(() => {
+    console.log('ChartScreen - chartOptions changed:', chartOptions);
+    console.log('ChartScreen - isFullscreen:', isFullscreen);
+  }, [chartOptions, isFullscreen]);
+
   // Sidebar animation
   const sidebarTranslateX = useRef(new Animated.Value(-screenWidth * 0.8)).current;
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
@@ -262,6 +268,7 @@ const ChartScreen: React.FC = () => {
             onFullscreenChange={setIsFullscreen}
             chartOptions={chartOptions}
             onChartOptionsChange={setChartOptions}
+            showControls={true}
           />
 
           {/* Floating Controls */}
