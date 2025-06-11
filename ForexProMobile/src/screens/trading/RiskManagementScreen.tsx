@@ -12,7 +12,6 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { colors, typography, spacing } from '../../theme';
 import { tradingService } from '../../services/tradingService';
@@ -190,10 +189,7 @@ const RiskManagementScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <LinearGradient
-        colors={[colors.background.primary, colors.background.secondary]}
-        style={styles.gradient}
-      >
+      <View style={styles.wrapper}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity 
@@ -203,9 +199,7 @@ const RiskManagementScreen: React.FC = () => {
             <Ionicons name="arrow-back" size={24} color={colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Risk Management</Text>
-          <TouchableOpacity style={styles.settingsButton}>
-            <Ionicons name="settings-outline" size={24} color={colors.text.primary} />
-          </TouchableOpacity>
+          <View style={styles.headerSpacer} />
         </View>
 
         {loading ? (
@@ -326,12 +320,7 @@ const RiskManagementScreen: React.FC = () => {
               </View>
 
               <TouchableOpacity style={styles.calculateButton} onPress={calculatePositionSize}>
-                <LinearGradient
-                  colors={[colors.primary[500], colors.secondary[500]]}
-                  style={styles.calculateButtonGradient}
-                >
-                  <Text style={styles.calculateButtonText}>Calculate Position Size</Text>
-                </LinearGradient>
+                <Text style={styles.calculateButtonText}>Calculate Position Size</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -387,7 +376,7 @@ const RiskManagementScreen: React.FC = () => {
           </View>
         </ScrollView>
         )}
-      </LinearGradient>
+      </View>
     </SafeAreaView>
   );
 };
@@ -395,8 +384,9 @@ const RiskManagementScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background.primary,
   },
-  gradient: {
+  wrapper: {
     flex: 1,
   },
   header: {
@@ -407,12 +397,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[4],
     borderBottomWidth: 1,
     borderBottomColor: colors.border.primary,
+    backgroundColor: colors.background.primary,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -421,13 +412,8 @@ const styles = StyleSheet.create({
     fontWeight: typography.weights.bold,
     color: colors.text.primary,
   },
-  settingsButton: {
+  headerSpacer: {
     width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   content: {
     flex: 1,
@@ -448,10 +434,12 @@ const styles = StyleSheet.create({
   },
   riskScoreContainer: {
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 16,
     padding: spacing[6],
     width: width * 0.5,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
   },
   riskScoreLabel: {
     fontSize: typography.sizes.sm,
@@ -473,11 +461,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   riskCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 12,
     padding: spacing[4],
     width: (width - spacing[6] * 2 - spacing[3]) / 2,
     marginBottom: spacing[3],
+    borderWidth: 1,
+    borderColor: colors.border.primary,
   },
   riskCardHeader: {
     flexDirection: 'row',
@@ -499,12 +489,12 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
   },
   positionCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 12,
     padding: spacing[4],
     marginBottom: spacing[3],
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: colors.border.primary,
   },
   positionHeader: {
     flexDirection: 'row',
@@ -544,9 +534,11 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   calculatorCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 12,
     padding: spacing[6],
+    borderWidth: 1,
+    borderColor: colors.border.primary,
   },
   calculatorInputRow: {
     marginBottom: spacing[4],
@@ -557,21 +549,19 @@ const styles = StyleSheet.create({
     marginBottom: spacing[2],
   },
   calculatorInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.input.background,
     borderRadius: 8,
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     fontSize: typography.sizes.base,
     color: colors.text.primary,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: colors.input.border,
   },
   calculateButton: {
     marginTop: spacing[4],
     borderRadius: 12,
-    overflow: 'hidden',
-  },
-  calculateButtonGradient: {
+    backgroundColor: colors.primary[500],
     paddingVertical: spacing[4],
     alignItems: 'center',
   },
@@ -581,11 +571,13 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   alertCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 12,
     padding: spacing[4],
     marginBottom: spacing[3],
     borderLeftWidth: 4,
+    borderWidth: 1,
+    borderColor: colors.border.primary,
   },
   alertHeader: {
     flexDirection: 'row',
@@ -609,9 +601,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   settingsCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.tertiary,
     borderRadius: 12,
     padding: spacing[6],
+    borderWidth: 1,
+    borderColor: colors.border.primary,
   },
   settingRow: {
     flexDirection: 'row',
@@ -619,7 +613,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing[3],
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: colors.border.primary,
   },
   settingLabel: {
     fontSize: typography.sizes.base,

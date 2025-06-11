@@ -122,7 +122,7 @@ const NotificationSettingsScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Notification Settings</Text>
         
         <TouchableOpacity style={styles.testButton} onPress={testNotification}>
-          <Icon name="notifications-active" size={24} color={colors.primary[500]} />
+          <Icon name="notifications" size={24} color={colors.primary[500]} />
         </TouchableOpacity>
       </View>
 

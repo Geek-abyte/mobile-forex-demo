@@ -18,8 +18,10 @@ import { colors, typography, spacing } from '../../theme';
 import { tradingService, TradeRequest, Position } from '../../services/tradingService';
 import { enhancedTradingService } from '../../services/enhancedTradingService';
 import { marketDataService } from '../../services/marketDataService';
-import TradingViewProfessionalChart, { CandlestickData } from '../../components/organisms/TradingViewProfessionalChart';
-import { realisticMarketSimulation } from '../../services/realisticMarketSimulation';
+import IndustryStandardChart, { CandlestickData } from '../../components/organisms/IndustryStandardChart';
+import ProfessionalTradingChart from '../../components/organisms/ProfessionalTradingChart';
+import OptimizedFullscreenChartModal from '../../components/organisms/OptimizedFullscreenChartModal';
+import { improvedMarketDataService } from '../../services/improvedMarketDataService';
 import { MainStackParamList, MainTabParamList } from '../../navigation/MainNavigator';
 
 const { width, height } = Dimensions.get('window');
@@ -58,6 +60,7 @@ const TradingScreen: React.FC = () => {
   const [timeframe, setTimeframe] = useState('1h');
   const [currentPrice, setCurrentPrice] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isChartFullscreen, setIsChartFullscreen] = useState(false);
   
   // UI state - Professional layout controls
   const [expandedSection, setExpandedSection] = useState<'watchlist' | 'positions' | 'analysis' | null>('watchlist');
@@ -174,15 +177,15 @@ const TradingScreen: React.FC = () => {
   const startPriceUpdates = () => {
     const updatePrices = () => {
       currencyPairs.forEach(({ symbol }) => {
-        const basePrice = Math.random() * 2 + 0.5;
-        const spread = 0.0002;
-        const change = (Math.random() - 0.5) * 0.01;
+        const currentPrice = improvedMarketDataService.getCurrentPrice(symbol);
+        const spread = improvedMarketDataService.getSpread(symbol);
+        const change = Math.random() * 0.02 - 0.01; // -1% to +1% change
 
         setPriceData(prev => ({
           ...prev,
           [symbol]: {
-            bid: basePrice,
-            ask: basePrice + spread,
+            bid: currentPrice - spread / 2,
+            ask: currentPrice + spread / 2,
             spread,
             change,
           },
@@ -191,46 +194,22 @@ const TradingScreen: React.FC = () => {
     };
 
     updatePrices();
-    const interval = setInterval(updatePrices, 1000);
+    const interval = setInterval(updatePrices, 2000); // Update every 2 seconds
     return () => clearInterval(interval);
   };
 
-  const generateInitialChartData = () => {
-    const data: CandlestickData[] = [];
-    const now = Date.now();
-    const timeframeMs = getTimeframeMs(timeframe);
-    let basePrice = 1.0850 + Math.random() * 0.02;
-
-    for (let i = 49; i >= 0; i--) {
-      const timestamp = now - (i * timeframeMs);
-      const volatility = 0.0005;
-      const change = (Math.random() - 0.5) * volatility;
-      
-      const open = basePrice;
-      const close = open + change;
-      const high = Math.max(open, close) + Math.random() * volatility * 0.5;
-      const low = Math.min(open, close) - Math.random() * volatility * 0.5;
-
-      data.push({
-        time: Math.floor(timestamp / 1000),
-        open,
-        high,
-        low,
-        close,
-        volume: Math.floor(Math.random() * 1000000) + 500000,
-      });
-
-      basePrice = close;
-    }
-
+  const loadInitialChartData = () => {
+    const data = improvedMarketDataService.getHistoricalData(selectedPair, timeframe);
     setChartData(data);
-    setCurrentPrice(basePrice);
+    if (data.length > 0) {
+      setCurrentPrice(data[data.length - 1].close);
+    }
   };
 
   useEffect(() => {
     loadPositions();
     const priceCleanup = startPriceUpdates();
-    generateInitialChartData();
+    loadInitialChartData();
     
     return () => {
       priceCleanup();
@@ -238,36 +217,27 @@ const TradingScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    generateInitialChartData();
+    loadInitialChartData();
     
-    const chartCleanup = realisticMarketSimulation.subscribeToRealTimeData(
+    const chartCleanup = improvedMarketDataService.subscribeToRealTimeData(
       selectedPair,
-      (newCandle: any) => {
+      timeframe,
+      (newCandle: CandlestickData) => {
         setChartData(prevData => {
           const updatedData = [...prevData];
           const lastIndex = updatedData.length - 1;
           
-          const timeDiff = newCandle.timestamp - (updatedData[lastIndex]?.time || 0);
-          const timeframeMs = getTimeframeMs(timeframe);
-          
-          if (timeDiff < timeframeMs && updatedData.length > 0) {
-            updatedData[lastIndex] = {
-              ...updatedData[lastIndex],
-              high: Math.max(updatedData[lastIndex].high, newCandle.close),
-              low: Math.min(updatedData[lastIndex].low, newCandle.close),
-              close: newCandle.close,
-              volume: (updatedData[lastIndex].volume || 0) + (newCandle.volume || 0),
-            };
+          // Check if this is an update to the current candle or a new candle
+          if (lastIndex >= 0 && updatedData[lastIndex].time === newCandle.time) {
+            // Update existing candle
+            updatedData[lastIndex] = newCandle;
           } else {
-            updatedData.push({
-              time: Math.floor(newCandle.timestamp / 1000),
-              open: newCandle.close,
-              high: newCandle.close,
-              low: newCandle.close,
-              close: newCandle.close,
-              volume: newCandle.volume || 0,
-            });
-            return updatedData.slice(-50);
+            // Add new candle
+            updatedData.push(newCandle);
+            // Keep only last 100 candles
+            if (updatedData.length > 100) {
+              updatedData.shift();
+            }
           }
           
           return updatedData;
@@ -352,42 +322,16 @@ const TradingScreen: React.FC = () => {
           </View>
         )}
 
-        {/* Chart Section */}
+        {/* Chart Section - Professional */}
         <View style={styles.chartSection}>
-          <View style={styles.chartHeader}>
-            <Text style={styles.chartTitle}>Chart</Text>
-            <ScrollView 
-              horizontal 
-              showsHorizontalScrollIndicator={false}
-              style={styles.timeframeSelector}
-            >
-              {timeframes.map((tf) => (
-                <TouchableOpacity
-                  key={tf.value}
-                  style={[
-                    styles.timeframeButton,
-                    timeframe === tf.value && styles.timeframeButtonActive,
-                  ]}
-                  onPress={() => setTimeframe(tf.value)}
-                >
-                  <Text
-                    style={[
-                      styles.timeframeText,
-                      timeframe === tf.value && styles.timeframeTextActive,
-                    ]}
-                  >
-                    {tf.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-          
-          <TradingViewProfessionalChart
+          <ProfessionalTradingChart
             symbol={selectedPair}
             data={chartData}
             theme="dark"
-            height={280}
+            height={320}
+            timeframe={timeframe}
+            onFullscreenChange={setIsChartFullscreen}
+            showControls={true}
           />
         </View>
 
@@ -695,6 +639,16 @@ const TradingScreen: React.FC = () => {
           </View>
         )}
       </ScrollView>
+      
+      {/* Fullscreen Chart Modal */}
+      <OptimizedFullscreenChartModal
+        visible={isChartFullscreen}
+        onClose={() => setIsChartFullscreen(false)}
+        symbol={selectedPair}
+        data={chartData}
+        timeframe={timeframe}
+        onTimeframeChange={setTimeframe}
+      />
     </SafeAreaView>
   );
 };
@@ -810,48 +764,13 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
 
-  // Chart Section
+  // Chart Section - Simplified
   chartSection: {
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.primary,
     margin: spacing[4],
     marginTop: 0,
     borderRadius: 12,
     overflow: 'hidden',
-  },
-  chartHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing[4],
-    paddingBottom: spacing[2],
-  },
-  chartTitle: {
-    fontSize: typography.sizes.lg,
-    fontFamily: typography.fonts.primary,
-    fontWeight: typography.weights.semibold,
-    color: colors.text.primary,
-  },
-  timeframeSelector: {
-    flexDirection: 'row',
-  },
-  timeframeButton: {
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1],
-    borderRadius: 6,
-    marginLeft: spacing[1],
-    backgroundColor: colors.background.tertiary,
-  },
-  timeframeButtonActive: {
-    backgroundColor: colors.primary[500],
-  },
-  timeframeText: {
-    fontSize: typography.sizes.xs,
-    fontFamily: typography.fonts.primary,
-    fontWeight: typography.weights.medium,
-    color: colors.text.secondary,
-  },
-  timeframeTextActive: {
-    color: colors.background.primary,
   },
 
   // Quick Trade Panel

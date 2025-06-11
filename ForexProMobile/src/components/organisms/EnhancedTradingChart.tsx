@@ -1,18 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   Dimensions,
+  Platform,
   TouchableOpacity,
-  ScrollView,
+  Text,
+  Modal,
+  StatusBar,
 } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { Ionicons } from '@expo/vector-icons';
-import { LineChart, CandlestickChart } from 'react-native-wagmi-charts';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, typography, spacing } from '../../theme';
 
-const { width } = Dimensions.get('window');
+export interface CandlestickData {
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume?: number;
+}
 
+// Legacy interface for backward compatibility
 export interface CandleData {
   timestamp: number;
   open: number;
@@ -23,11 +34,18 @@ export interface CandleData {
 }
 
 interface EnhancedTradingChartProps {
-  symbol: string;
-  data: CandleData[];
-  currentPrice: number;
-  onTimeframeChange: (timeframe: string) => void;
-  selectedTimeframe: string;
+  data: CandlestickData[] | CandleData[];
+  symbol?: string;
+  theme?: 'light' | 'dark';
+  onCrosshairMove?: (data: any) => void;
+  width?: number;
+  height?: number;
+  timeframe?: string;
+  onFullscreenChange?: (isFullscreen: boolean) => void;
+  // Legacy props for backward compatibility
+  currentPrice?: number;
+  onTimeframeChange?: (timeframe: string) => void;
+  selectedTimeframe?: string;
   isFullscreen?: boolean;
   onFullscreenToggle?: () => void;
 }

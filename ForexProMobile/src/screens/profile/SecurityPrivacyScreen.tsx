@@ -235,7 +235,7 @@ const SecurityPrivacyScreen: React.FC = () => {
             )}
             
             {renderSettingItem(
-              'fingerprint',
+              'finger-print',
               'Biometric Authentication',
               'Use fingerprint or face ID',
               <Switch

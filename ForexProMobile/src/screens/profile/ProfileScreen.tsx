@@ -191,7 +191,7 @@ const ProfileScreen: React.FC = () => {
 
   const appSettings = [
     {
-      icon: 'fingerprint',
+      icon: 'finger-print',
       iconBg: colors.status.success,
       title: 'Biometric Authentication',
       subtitle: 'Use fingerprint or face ID to unlock',
@@ -226,7 +226,7 @@ const ProfileScreen: React.FC = () => {
 
   const supportSettings = [
     {
-      icon: 'notifications-active',
+      icon: 'notifications',
       iconBg: colors.primary[500],
       title: 'Notification Demo',
       subtitle: 'Test all notification types',
