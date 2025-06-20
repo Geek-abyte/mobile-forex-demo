@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { colors, typography, spacing } from '../../theme';
+import FusionMarketsLogo from '../../components/atoms/FusionMarketsLogo';
 
 interface FormData {
   firstName: string;
@@ -105,7 +106,7 @@ const RegisterScreen: React.FC = () => {
       setIsLoading(false);
       Alert.alert(
         'Registration Successful!',
-        'Welcome to ForexPro! Please check your email to verify your account.',
+        'Welcome to Fusion Markets! Please check your email to verify your account.',
         [
           {
             text: 'Continue',
@@ -162,9 +163,12 @@ const RegisterScreen: React.FC = () => {
                 },
               ]}
             >
-              {/* Brand Section */}
+              {/* Brand Section - Enhanced */}
               <View style={styles.brandSection}>
-                <Text style={styles.title}>Join ForexPro</Text>
+                <View style={styles.logoWrapper}>
+                  <FusionMarketsLogo width={180} height={75} />
+                </View>
+                <Text style={styles.title}>Join Fusion Markets</Text>
                 <Text style={styles.subtitle}>
                   Start your professional trading journey
                 </Text>
@@ -406,14 +410,22 @@ const styles = StyleSheet.create({
   brandSection: {
     alignItems: 'center',
     marginTop: spacing[8],
-    marginBottom: spacing[10],
+    marginBottom: spacing[12],
+  },
+  logoWrapper: {
+    marginBottom: spacing[6],
+    shadowColor: colors.logo.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: typography.sizes['3xl'],
     fontFamily: typography.fonts.primary,
     fontWeight: typography.weights.bold,
-    color: colors.primary[500],
-    marginBottom: spacing[3],
+    color: colors.logo.primary,
+    marginBottom: spacing[4],
   },
   subtitle: {
     fontSize: typography.sizes.lg,

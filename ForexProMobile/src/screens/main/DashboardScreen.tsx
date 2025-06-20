@@ -22,6 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../../navigation/MainNavigator';
 import NotificationBell from '../../components/atoms/NotificationBell';
+import FusionMarketsLogo from '../../components/atoms/FusionMarketsLogo';
 
 const { width } = Dimensions.get('window');
 
@@ -156,8 +157,11 @@ const DashboardScreen: React.FC = () => {
         {/* Professional Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.welcomeText}>Welcome back,</Text>
-            <Text style={styles.userNameText}>{user?.firstName || 'Trader'}</Text>
+            <FusionMarketsLogo iconOnly width={32} height={32} />
+            <View style={styles.welcomeContainer}>
+              <Text style={styles.welcomeText}>Welcome back,</Text>
+              <Text style={styles.userNameText}>{user?.firstName || 'Trader'}</Text>
+            </View>
           </View>
           <View style={styles.headerRight}>
             <NotificationBell 
@@ -407,7 +411,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[5],
   },
   headerLeft: {
-    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  welcomeContainer: {
+    marginLeft: spacing[3],
   },
   headerRight: {
     flexDirection: 'row',

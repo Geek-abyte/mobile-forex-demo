@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import AppNavigator from '@/navigation/AppNavigator';
 import FloatingNotification from '@/components/organisms/FloatingNotification';
@@ -8,9 +8,11 @@ import { TutorialProvider } from '@/contexts/TutorialContext';
 import NotificationIntegration from '@/services/notificationIntegration';
 import { notificationManager } from '@/services/notificationManager';
 import { useAppSelector } from '@/store/hooks';
+import SplashScreen from '@/components/SplashScreen';
 
 const MainApp: React.FC = () => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const [showSplash, setShowSplash] = useState(true);
 
   // Initialize notification manager once on app start
   useEffect(() => {
@@ -39,20 +41,31 @@ const MainApp: React.FC = () => {
     };
   }, [isAuthenticated]); // React to authentication state changes
 
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
+  // Render splash screen or main app based on state
   return (
-    <TutorialProvider>
-      <View style={styles.container}>
-        <AppNavigator />
-        {/* Only show floating notifications when user is authenticated */}
-        {isAuthenticated && (
-          <FloatingNotification position="top" maxVisible={1} />
-        )}
-        {/* Tutorial system - only shows when authenticated */}
-        {isAuthenticated && <TutorialManager />}
-        {/* Development tools for testing tutorial */}
-        {isAuthenticated && <TutorialDevTools />}
-      </View>
-    </TutorialProvider>
+    <>
+      {showSplash ? (
+        <SplashScreen onAnimationComplete={handleSplashComplete} />
+      ) : (
+        <TutorialProvider>
+          <View style={styles.container}>
+            <AppNavigator />
+            {/* Only show floating notifications when user is authenticated */}
+            {isAuthenticated && (
+              <FloatingNotification position="top" maxVisible={1} />
+            )}
+            {/* Tutorial system - only shows when authenticated */}
+            {isAuthenticated && <TutorialManager />}
+            {/* Development tools for testing tutorial */}
+            {isAuthenticated && <TutorialDevTools />}
+          </View>
+        </TutorialProvider>
+      )}
+    </>
   );
 };
 

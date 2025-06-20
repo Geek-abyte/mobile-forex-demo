@@ -13,10 +13,10 @@ import {
   ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import Icon from '@expo/vector-icons/MaterialIcons';
 import { colors, typography, spacing } from '../../theme';
 import { useAuth } from '../../hooks/useAuth';
+import FusionMarketsLogo from '../../components/atoms/FusionMarketsLogo';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('demo@forexpro.com');
@@ -26,29 +26,20 @@ const LoginScreen: React.FC = () => {
   
   // Animation values
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
 
   useEffect(() => {
-    // Stagger animations for smooth entrance
-    Animated.sequence([
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: false,
-        }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 800,
-          useNativeDriver: false,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: false,
-        }),
-      ]),
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, []);
 
@@ -66,10 +57,7 @@ const LoginScreen: React.FC = () => {
         style={styles.keyboardContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <LinearGradient
-          colors={[colors.background.primary, colors.background.secondary, colors.background.primary]}
-          style={styles.gradient}
-        >
+        <View style={styles.gradient}>
           <ScrollView 
             style={styles.scrollView} 
             showsVerticalScrollIndicator={false}
@@ -80,25 +68,17 @@ const LoginScreen: React.FC = () => {
                 styles.content,
                 {
                   opacity: fadeAnim,
-                  transform: [
-                    { translateY: slideAnim },
-                    { scale: scaleAnim }
-                  ]
+                  transform: [{ translateY: slideAnim }]
                 }
               ]}
             >
               {/* Brand Section */}
               <View style={styles.brandSection}>
                 <View style={styles.logoContainer}>
-                  <LinearGradient
-                    colors={[colors.primary[500], colors.primary[400]]}
-                    style={styles.logoGradient}
-                  >
-                    <Icon name="trending-up" size={48} color={colors.text.inverse} />
-                  </LinearGradient>
+                  <FusionMarketsLogo width={200} height={83} />
                 </View>
                 <Text style={styles.title}>Welcome Back</Text>
-                <Text style={styles.subtitle}>Sign in to your ForexPro account</Text>
+                <Text style={styles.subtitle}>Sign in to your account</Text>
               </View>
 
               {/* Login Form */}
@@ -109,7 +89,7 @@ const LoginScreen: React.FC = () => {
                   <View style={styles.inputWrapper}>
                     <Icon name="email" size={20} color={colors.text.tertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={[styles.input, styles.inputWithIcon]}
+                      style={styles.input}
                       placeholder="Enter your email"
                       placeholderTextColor={colors.input.placeholder}
                       value={email}
@@ -127,7 +107,7 @@ const LoginScreen: React.FC = () => {
                   <View style={styles.inputWrapper}>
                     <Icon name="lock" size={20} color={colors.text.tertiary} style={styles.inputIcon} />
                     <TextInput
-                      style={[styles.input, styles.inputWithIcon]}
+                      style={styles.input}
                       placeholder="Enter your password"
                       placeholderTextColor={colors.input.placeholder}
                       value={password}
@@ -158,7 +138,7 @@ const LoginScreen: React.FC = () => {
 
                 {/* Demo Notice */}
                 <View style={styles.demoNotice}>
-                  <Icon name="info-outline" size={16} color={colors.primary[400]} />
+                  <Icon name="info-outline" size={16} color={colors.logo.secondary} />
                   <Text style={styles.demoText}>
                     Demo credentials are pre-filled. Tap "Sign In" to continue.
                   </Text>
@@ -170,22 +150,17 @@ const LoginScreen: React.FC = () => {
                   onPress={handleLogin}
                   disabled={isLoading}
                 >
-                  <LinearGradient
-                    colors={isLoading ? [colors.text.tertiary, colors.text.tertiary] : [colors.primary[500], colors.primary[400]]}
-                    style={styles.buttonGradient}
-                  >
-                    {isLoading ? (
-                      <>
-                        <ActivityIndicator color={colors.text.inverse} size="small" />
-                        <Text style={styles.buttonText}>Signing In...</Text>
-                      </>
-                    ) : (
-                      <>
-                        <Text style={styles.buttonText}>Sign In</Text>
-                        <Icon name="arrow-forward" size={20} color={colors.text.inverse} />
-                      </>
-                    )}
-                  </LinearGradient>
+                  {isLoading ? (
+                    <>
+                      <ActivityIndicator color={colors.text.primary} size="small" />
+                      <Text style={styles.buttonText}>Signing In...</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text style={styles.buttonText}>Sign In</Text>
+                      <Icon name="arrow-forward" size={20} color={colors.text.primary} />
+                    </>
+                  )}
                 </TouchableOpacity>
 
                 {/* Forgot Password */}
@@ -203,7 +178,7 @@ const LoginScreen: React.FC = () => {
               </View>
             </Animated.View>
           </ScrollView>
-        </LinearGradient>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -219,6 +194,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    backgroundColor: colors.background.primary,
   },
   scrollView: {
     flex: 1,
@@ -226,11 +202,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    minHeight: '100%',
-  },
-  content: {
     paddingHorizontal: spacing[6],
     paddingVertical: spacing[8],
+  },
+  content: {
+    flex: 1,
+    justifyContent: 'center',
   },
   brandSection: {
     alignItems: 'center',
@@ -238,24 +215,17 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: spacing[6],
-  },
-  logoGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.primary[500],
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowColor: colors.logo.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: typography.sizes['3xl'],
     fontFamily: typography.fonts.primary,
     fontWeight: typography.weights.bold,
-    color: colors.primary[500],
+    color: colors.text.primary,
     marginBottom: spacing[3],
     textAlign: 'center',
   },
@@ -287,14 +257,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.input.background,
     borderRadius: 12,
     paddingHorizontal: spacing[4],
+    paddingLeft: 50,
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.primary,
     color: colors.text.primary,
     borderWidth: 1,
     borderColor: colors.input.border,
-  },
-  inputWithIcon: {
-    paddingLeft: 50,
   },
   inputIcon: {
     position: 'absolute',
@@ -329,40 +297,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[2],
-    backgroundColor: colors.primary[500] + '20',
+    backgroundColor: colors.logo.primary + '20',
     paddingHorizontal: spacing[4],
     paddingVertical: spacing[3],
     borderRadius: 8,
     borderLeftWidth: 3,
-    borderLeftColor: colors.primary[400],
+    borderLeftColor: colors.logo.secondary,
   },
   demoText: {
     flex: 1,
     fontSize: typography.sizes.sm,
     fontFamily: typography.fonts.primary,
-    color: colors.primary[400],
+    color: colors.logo.secondary,
     fontStyle: 'italic',
   },
   loginButton: {
+    backgroundColor: colors.primary[500],
     borderRadius: 12,
-    overflow: 'hidden',
-    marginTop: spacing[4],
-  },
-  buttonGradient: {
     height: 56,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing[2],
+    marginTop: spacing[4],
+    shadowColor: colors.primary[500],
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   buttonText: {
-    fontSize: typography.sizes.base,
+    fontSize: typography.sizes.lg,
     fontFamily: typography.fonts.primary,
     fontWeight: typography.weights.semibold,
-    color: colors.text.inverse,
+    color: colors.text.primary,
   },
   disabledButton: {
     opacity: 0.6,
+    backgroundColor: colors.text.tertiary,
   },
   forgotPassword: {
     alignItems: 'center',
@@ -371,7 +343,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.primary,
-    color: colors.primary[400],
+    color: colors.logo.secondary,
     fontWeight: typography.weights.medium,
   },
   registerContainer: {
@@ -389,7 +361,7 @@ const styles = StyleSheet.create({
     fontSize: typography.sizes.base,
     fontFamily: typography.fonts.primary,
     fontWeight: typography.weights.semibold,
-    color: colors.primary[500],
+    color: colors.logo.secondary,
   },
 });
 

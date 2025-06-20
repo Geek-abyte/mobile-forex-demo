@@ -19,6 +19,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, typography, spacing } from '../../theme';
 import { MainTabParamList } from '../../navigation/MainNavigator';
 import StandardHeader from '../../components/molecules/StandardHeader';
+import FusionHeader from '../../components/molecules/FusionHeader';
 import TutorialHelpButton from '../../components/molecules/TutorialHelpButton';
 
 const { width } = Dimensions.get('window');
@@ -360,7 +361,15 @@ const MarketScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StandardHeader title="Markets" />
+      <FusionHeader 
+        title="Markets" 
+        rightActions={[
+          <TutorialHelpButton
+            key="help"
+            size="medium"
+          />
+        ]} 
+      />
       
       <View style={styles.content}>
 

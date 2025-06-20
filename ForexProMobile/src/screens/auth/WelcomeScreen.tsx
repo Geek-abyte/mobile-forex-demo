@@ -4,20 +4,19 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
   Animated,
   StatusBar,
-  Platform,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, typography, spacing } from '../../theme';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import FusionMarketsLogo from '../../components/atoms/FusionMarketsLogo';
 
-const { width, height } = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 type WelcomeScreenNavigationProp = StackNavigationProp<AuthStackParamList, 'Welcome'>;
 
@@ -29,66 +28,67 @@ interface OnboardingSlide {
   id: number;
   icon: string;
   title: string;
+  subtitle: string;
   description: string;
-  accentColor: string;
 }
 
 const onboardingSlides: OnboardingSlide[] = [
   {
     id: 1,
-    icon: 'trending-up',
-    title: 'Trade with Confidence',
-    description: 'Access global markets with professional-grade tools and real-time data.',
-    accentColor: colors.primary[500],
+    icon: 'trending-up-outline',
+    title: 'Professional Trading',
+    subtitle: 'Made Simple',
+    description: 'Execute trades with institutional-grade tools designed for both beginners and professionals.',
   },
   {
     id: 2,
-    icon: 'shield-checkmark',
-    title: 'Secure & Regulated',
-    description: 'Your funds are protected with bank-grade security and regulatory compliance.',
-    accentColor: colors.secondary[500],
+    icon: 'shield-checkmark-outline',
+    title: 'Bank-Level Security',
+    subtitle: 'Your Safety First',
+    description: 'Advanced encryption and regulatory compliance ensure your funds and data are protected.',
   },
   {
     id: 3,
-    icon: 'analytics',
-    title: 'Smart Analytics',
-    description: 'Make informed decisions with AI-powered insights and advanced charting.',
-    accentColor: colors.trading.profit,
+    icon: 'analytics-outline',
+    title: 'Advanced Analytics',
+    subtitle: 'Data-Driven Decisions',
+    description: 'Real-time market data, professional charts, and AI-powered insights at your fingertips.',
+  },
+  {
+    id: 4,
+    icon: 'rocket-outline',
+    title: 'Start Trading',
+    subtitle: 'Join Thousands of Traders',
+    description: 'Ready to begin your trading journey? Create your account and start with our demo trading.',
   },
 ];
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef<ScrollView>(null);
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Fade in animation
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 800,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }).start();
-  }, []);
-
-  useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [currentSlide]);
+  }, [fadeAnim]);
 
   const handleNext = () => {
     if (currentSlide < onboardingSlides.length - 1) {
       const nextSlide = currentSlide + 1;
       setCurrentSlide(nextSlide);
       scrollViewRef.current?.scrollTo({
-        x: nextSlide * width,
+        x: nextSlide * screenWidth,
         animated: true,
       });
     } else {
-      navigation.navigate('Login');
+      // Last slide - navigate to registration
+      navigation.navigate('Register');
     }
   };
 
@@ -105,78 +105,57 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const onScroll = (event: any) => {
-    const contentOffset = event.nativeEvent.contentOffset.x;
-    const slide = Math.round(contentOffset / width);
-    if (slide !== currentSlide) {
-      setCurrentSlide(slide);
+    const slideIndex = Math.round(event.nativeEvent.contentOffset.x / screenWidth);
+    if (slideIndex !== currentSlide && slideIndex >= 0 && slideIndex < onboardingSlides.length) {
+      setCurrentSlide(slideIndex);
     }
   };
 
-  const renderSlide = (slide: OnboardingSlide, index: number) => (
-    <View key={slide.id} style={styles.slide}>
-      <View style={styles.slideContent}>
-        <View style={[styles.iconContainer, { backgroundColor: slide.accentColor + '20' }]}>
-          <Icon name={slide.icon} size={48} color={slide.accentColor} />
-        </View>
-        <Text style={styles.slideTitle}>{slide.title}</Text>
-        <Text style={styles.slideDescription}>{slide.description}</Text>
-      </View>
-    </View>
-  );
+  const renderSlide = (slide: OnboardingSlide, index: number) => {
+    return (
+      <View key={slide.id} style={styles.slide}>
+        <View style={styles.slideContent}>
+          {/* Icon */}
+          <View style={styles.iconContainer}>
+            <Icon name={slide.icon} size={56} color={colors.primary[400]} />
+          </View>
 
-  const renderPagination = () => (
-    <View style={styles.pagination}>
-      {onboardingSlides.map((_, index) => (
-        <View
-          key={index}
-          style={[
-            styles.paginationDot,
-            {
-              backgroundColor: index === currentSlide ? colors.primary[500] : colors.text.tertiary,
-              width: index === currentSlide ? 24 : 8,
-            },
-          ]}
-        />
-      ))}
-    </View>
-  );
+          {/* Content */}
+          <View style={styles.contentContainer}>
+            <Text style={styles.slideTitle}>{slide.title}</Text>
+            <Text style={styles.slideSubtitle}>{slide.subtitle}</Text>
+            <Text style={styles.slideDescription}>{slide.description}</Text>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const isLastSlide = currentSlide === onboardingSlides.length - 1;
 
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor={colors.background.primary} />
-      <SafeAreaView style={styles.container}>
-        <LinearGradient
-          colors={[colors.background.primary, colors.background.secondary]}
-          style={styles.gradient}
-        >
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
           {/* Header */}
           <Animated.View style={[styles.header, { opacity: fadeAnim }]}>
-            <View style={styles.titleContainer}>
-              <Text style={styles.brandName}>
-                <Text style={styles.brandPrefix}>Forex</Text>
-                <Text style={styles.brandSuffix}>Pro</Text>
-              </Text>
-              <Text style={styles.brandTagline}>Trade Smarter</Text>
-            </View>
-            
-            {currentSlide < onboardingSlides.length - 1 && (
-              <View style={styles.skipContainer}>
-                <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-                  <Text style={styles.skipText}>Skip</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <FusionMarketsLogo width={100} height={32} />
+            <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+              <Text style={styles.skipText}>Skip</Text>
+            </TouchableOpacity>
           </Animated.View>
 
-          {/* Carousel */}
-          <Animated.View style={[styles.carouselContainer, { opacity: fadeAnim }]}>
+          {/* Slides */}
+          <Animated.View style={[styles.slidesContainer, { opacity: fadeAnim }]}>
             <ScrollView
               ref={scrollViewRef}
               horizontal
               pagingEnabled
               showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={onScroll}
-              style={styles.carousel}
+              onScroll={onScroll}
+              scrollEventThrottle={16}
+              style={styles.scrollView}
             >
               {onboardingSlides.map((slide, index) => renderSlide(slide, index))}
             </ScrollView>
@@ -184,47 +163,40 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
           {/* Pagination */}
           <Animated.View style={[styles.paginationContainer, { opacity: fadeAnim }]}>
-            {renderPagination()}
+            {onboardingSlides.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.paginationDot,
+                  {
+                    opacity: index === currentSlide ? 1 : 0.3,
+                    backgroundColor: colors.primary[index === currentSlide ? 400 : 300],
+                  },
+                ]}
+              />
+            ))}
           </Animated.View>
 
-          {/* Actions */}
-          <Animated.View style={[styles.actionsContainer, { opacity: fadeAnim }]}>
-            {currentSlide === onboardingSlides.length - 1 ? (
+          {/* Bottom Actions */}
+          <Animated.View style={[styles.bottomContainer, { opacity: fadeAnim }]}>
+            {isLastSlide ? (
               <View style={styles.finalActions}>
                 <TouchableOpacity style={styles.primaryButton} onPress={handleGetStarted}>
-                  <LinearGradient
-                    colors={[colors.primary[500], colors.primary[400]]}
-                    style={styles.buttonGradient}
-                  >
-                    <Text style={styles.primaryButtonText}>Get Started</Text>
-                  </LinearGradient>
+                  <Text style={styles.primaryButtonText}>Get Started</Text>
                 </TouchableOpacity>
-                
                 <TouchableOpacity style={styles.secondaryButton} onPress={handleSignIn}>
                   <Text style={styles.secondaryButtonText}>I already have an account</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-                <LinearGradient
-                  colors={[colors.primary[500], colors.primary[400]]}
-                  style={styles.nextButtonGradient}
-                >
-                  <Text style={styles.nextButtonText}>Next</Text>
-                  <Icon name="arrow-forward" size={20} color={colors.text.inverse} />
-                </LinearGradient>
+                <Text style={styles.nextButtonText}>Continue</Text>
+                <Icon name="chevron-forward" size={20} color={colors.text.primary} />
               </TouchableOpacity>
             )}
           </Animated.View>
-
-          {/* Footer */}
-          <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
-            <Text style={styles.footerText}>
-              Secure • Regulated • Trusted by millions
-            </Text>
-          </Animated.View>
-        </LinearGradient>
-      </SafeAreaView>
+        </SafeAreaView>
+      </View>
     </>
   );
 };
@@ -234,220 +206,158 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background.primary,
   },
-  gradient: {
+  safeArea: {
     flex: 1,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingHorizontal: spacing[6],
-    paddingTop: spacing[6],
-    paddingBottom: spacing[4],
-    minHeight: 100,
-    position: 'relative',
-  },
-  titleContainer: {
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  brandName: {
-    textAlign: 'center',
-    lineHeight: 36,
-    minHeight: 40,
-  },
-  brandPrefix: {
-    ...typography.styles.h2,
-    color: colors.text.primary,
-    fontWeight: '300',
-    letterSpacing: 1,
-    lineHeight: 36,
-  },
-  brandSuffix: {
-    ...typography.styles.h2,
-    color: colors.primary[500],
-    fontWeight: '700',
-    letterSpacing: 1,
-    lineHeight: 36,
-  },
-  brandTagline: {
-    ...typography.styles.caption,
-    color: colors.text.tertiary,
-    fontWeight: '400',
-    textAlign: 'center',
-    marginTop: spacing[1],
-    letterSpacing: 0.5,
-    lineHeight: 16,
-    minHeight: 16,
-  },
-  skipContainer: {
-    position: 'absolute',
-    right: spacing[6],
-    top: spacing[6],
+    paddingHorizontal: spacing[6], // 24px
+    paddingVertical: spacing[4], // 16px
   },
   skipButton: {
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[2],
-    minHeight: 36,
-    backgroundColor: colors.background.elevated + '80',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: colors.primary[500] + '30',
+    paddingHorizontal: spacing[4], // 16px
+    paddingVertical: spacing[2], // 8px
   },
   skipText: {
-    ...typography.styles.bodySmall,
-    color: colors.text.tertiary,
-    fontWeight: '500',
-    lineHeight: 20,
-    minHeight: 20,
+    fontSize: typography.sizes.base,
+    fontWeight: typography.weights.medium,
+    color: colors.text.secondary,
   },
-  carouselContainer: {
+  slidesContainer: {
     flex: 1,
-    marginTop: 0,
-    minHeight: 400,
   },
-  carousel: {
+  scrollView: {
     flex: 1,
   },
   slide: {
-    width: width,
+    width: screenWidth,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: spacing[6],
-    paddingVertical: spacing[4],
+    paddingHorizontal: spacing[8], // 32px
   },
   slideContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
     flex: 1,
-    paddingVertical: spacing[8],
+    justifyContent: 'center',
+    alignItems: 'center',
+    maxWidth: 320,
   },
   iconContainer: {
     width: 120,
     height: 120,
     borderRadius: 60,
+    backgroundColor: colors.background.tertiary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing[6],
     borderWidth: 2,
-    borderColor: colors.background.elevated,
+    borderColor: colors.primary[400],
+    marginBottom: spacing[12], // 48px
+    shadowColor: colors.primary[400],
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  contentContainer: {
+    alignItems: 'center',
   },
   slideTitle: {
-    ...typography.styles.h2,
+    fontSize: typography.sizes['4xl'], // 36px
+    fontWeight: typography.weights.bold,
     color: colors.text.primary,
     textAlign: 'center',
-    marginBottom: spacing[4],
-    fontWeight: '600',
-    minHeight: 40,
-    lineHeight: 32,
+    marginBottom: spacing[2], // 8px
+    letterSpacing: -0.5,
+  },
+  slideSubtitle: {
+    fontSize: typography.sizes['2xl'], // 24px
+    fontWeight: typography.weights.medium,
+    color: colors.primary[400],
+    textAlign: 'center',
+    marginBottom: spacing[6], // 24px
   },
   slideDescription: {
-    ...typography.styles.body,
+    fontSize: typography.sizes.lg, // 18px
+    fontWeight: typography.weights.regular,
     color: colors.text.secondary,
     textAlign: 'center',
-    lineHeight: 24,
-    paddingHorizontal: spacing[4],
-    minHeight: 50,
-    maxWidth: width * 0.8,
+    lineHeight: 26,
+    marginBottom: spacing[8], // 32px
   },
   paginationContainer: {
-    alignItems: 'center',
-    paddingVertical: spacing[6],
-  },
-  pagination: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: spacing[6], // 24px
   },
   paginationDot: {
+    width: 8,
     height: 8,
     borderRadius: 4,
-    marginHorizontal: spacing[1],
-    backgroundColor: colors.text.tertiary,
+    marginHorizontal: spacing[1], // 4px
   },
-  actionsContainer: {
-    paddingHorizontal: spacing[6],
-    paddingBottom: spacing[4],
-    minHeight: 120,
+  bottomContainer: {
+    paddingHorizontal: spacing[6], // 24px
+    paddingBottom: spacing[8], // 32px
   },
   finalActions: {
-    gap: spacing[3],
-    minHeight: 100,
+    alignItems: 'center',
   },
   primaryButton: {
-    borderRadius: 16,
-    shadowColor: colors.primary[500],
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  buttonGradient: {
-    paddingVertical: spacing[4],
-    paddingHorizontal: spacing[6],
-    borderRadius: 16,
+    width: '100%',
+    backgroundColor: colors.primary[500],
+    borderRadius: 12,
+    paddingVertical: spacing[4], // 16px
+    paddingHorizontal: spacing[8], // 32px
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 56,
-  },
-  primaryButtonText: {
-    ...typography.styles.h5,
-    color: colors.text.inverse,
-    fontWeight: '600',
-    lineHeight: 22,
-    minHeight: 22,
-  },
-  secondaryButton: {
-    alignItems: 'center',
-    paddingVertical: spacing[3],
-    minHeight: 40,
-  },
-  secondaryButtonText: {
-    ...typography.styles.bodySmall,
-    color: colors.text.tertiary,
-    fontWeight: '500',
-    lineHeight: 20,
-    minHeight: 20,
-  },
-  nextButton: {
-    borderRadius: 16,
+    marginBottom: spacing[4], // 16px
     shadowColor: colors.primary[500],
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 6,
+    elevation: 8,
   },
-  nextButtonGradient: {
+  primaryButtonText: {
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.semibold,
+    color: colors.text.primary,
+  },
+  secondaryButton: {
+    paddingVertical: spacing[4], // 16px
+    paddingHorizontal: spacing[8], // 32px
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryButtonText: {
+    fontSize: typography.sizes.base,
+    fontWeight: typography.weights.medium,
+    color: colors.text.secondary,
+  },
+  nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing[4],
-    paddingHorizontal: spacing[6],
-    borderRadius: 16,
-    minHeight: 56,
-    gap: spacing[2],
+    backgroundColor: colors.background.tertiary,
+    borderRadius: 12,
+    paddingVertical: spacing[4], // 16px
+    paddingHorizontal: spacing[8], // 32px
+    borderWidth: 1,
+    borderColor: colors.primary[400],
   },
   nextButtonText: {
-    ...typography.styles.h5,
-    color: colors.text.inverse,
-    fontWeight: '600',
-    lineHeight: 22,
-    minHeight: 22,
-  },
-  footer: {
-    alignItems: 'center',
-    paddingHorizontal: spacing[6],
-    paddingBottom: Platform.OS === 'ios' ? spacing[2] : spacing[4],
-    minHeight: 40,
-  },
-  footerText: {
-    ...typography.styles.caption,
-    color: colors.text.tertiary,
-    textAlign: 'center',
-    lineHeight: 18,
-    minHeight: 18,
-    paddingVertical: spacing[1],
+    fontSize: typography.sizes.lg,
+    fontWeight: typography.weights.medium,
+    color: colors.text.primary,
+    marginRight: spacing[2], // 8px
   },
 });
 

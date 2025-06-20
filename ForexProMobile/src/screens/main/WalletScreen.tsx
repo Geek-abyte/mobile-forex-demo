@@ -16,6 +16,7 @@ import { colors, typography, spacing } from '../../theme';
 import { MainStackParamList } from '../../navigation/MainNavigator';
 import { accountService, AccountBalance, RecentTransaction } from '../../services/accountService';
 import StandardHeader from '../../components/molecules/StandardHeader';
+import FusionHeader from '../../components/molecules/FusionHeader';
 
 const WalletScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
@@ -146,7 +147,7 @@ const WalletScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StandardHeader title="Wallet" />
+      <FusionHeader title="Wallet" />
       
       <ScrollView
         style={styles.scrollView}

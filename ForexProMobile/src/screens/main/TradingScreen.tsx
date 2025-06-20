@@ -23,6 +23,7 @@ import ProfessionalTradingChart from '../../components/organisms/ProfessionalTra
 import OptimizedFullscreenChartModal from '../../components/organisms/OptimizedFullscreenChartModal';
 import { improvedMarketDataService } from '../../services/improvedMarketDataService';
 import { MainStackParamList, MainTabParamList } from '../../navigation/MainNavigator';
+import FusionMarketsLogo from '../../components/atoms/FusionMarketsLogo';
 
 const { width, height } = Dimensions.get('window');
 
@@ -261,8 +262,11 @@ const TradingScreen: React.FC = () => {
       {/* Professional Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Trading</Text>
-          <Text style={styles.headerSubtitle}>{selectedPair}</Text>
+          <FusionMarketsLogo iconOnly width={24} height={24} />
+          <View style={styles.headerTitleContainer}>
+            <Text style={styles.headerTitle}>Trading</Text>
+            <Text style={styles.headerSubtitle}>{selectedPair}</Text>
+          </View>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity 
@@ -675,6 +679,11 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerTitleContainer: {
+    marginLeft: spacing[3],
   },
   headerTitle: {
     fontSize: typography.sizes.xl,

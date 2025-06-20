@@ -1,39 +1,58 @@
 {
   "expo": {
-    "name": "ForexProMobile",
-    "slug": "ForexProMobile",
+    "name": "Fusion Markets",
+    "slug": "FusionMarkets",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0B0D1A"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.exposhey.ForexProMobile",
+      "bundleIdentifier": "com.fusionmarkets.mobile",
+      "buildNumber": "1",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleDisplayName": "Fusion Markets",
+        "CFBundleName": "Fusion Markets"
+      },
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0B0D1A"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.exposhey.ForexProMobile"
+      "package": "com.fusionmarkets.mobile",
+      "versionCode": 1,
+      "icon": "./assets/icon.png"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "Fusion Markets",
+      "shortName": "Fusion Markets"
     },
     "extra": {
       "eas": {
         "projectId": "d1c909c7-b78c-460b-b877-e6ef5ecae18a"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0B0D1A",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain"
+        }
+      ]
+    ]
   }
 }

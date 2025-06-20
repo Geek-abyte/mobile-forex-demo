@@ -1,29 +1,37 @@
-// Bybit-inspired color palette for professional trading app
+// Fusion Markets inspired color palette for professional trading app
 export const colors = {
-  // Primary brand colors
+  // Primary brand colors - harmonizing with logo purple gradients
   primary: {
-    500: '#F7931A', // Bitcoin orange - main brand color
-    400: '#FFB147',
-    300: '#FFC875',
-    200: '#FFE0A3',
-    100: '#FFF7E6',
+    500: '#6A4AE6', // Main purple - harmonizes with logo
+    400: '#8B67EC',
+    300: '#A685F2',
+    200: '#C2A3F8',
+    100: '#E3D1FD',
   },
 
-  // Secondary accent colors  
+  // Secondary accent colors - complementary to purple
   secondary: {
-    500: '#00D4AA', // Profit green
+    500: '#00D4AA', // Profit green - maintains trading convention
     400: '#33DCBB',
     300: '#66E5CC',
     200: '#99EDDD',
     100: '#CCF6EE',
   },
 
-  // Background colors
+  // Logo-inspired gradient colors for special uses
+  logo: {
+    primary: '#5B17B7',   // Logo primary purple
+    secondary: '#982BDC', // Logo secondary purple
+    tertiary: '#3922B4',  // Logo tertiary purple
+    accent: '#B64AE3',    // Logo accent purple
+  },
+
+  // Background colors - darker with purple undertones
   background: {
-    primary: '#0A0E17',   // Deep dark blue - main background
-    secondary: '#151A24', // Slightly lighter dark
-    tertiary: '#1E2330',  // Card/component background
-    elevated: '#252B3B',  // Modal/elevated surfaces
+    primary: '#0B0D1A',   // Deep dark with purple hint
+    secondary: '#141729', // Slightly lighter with purple
+    tertiary: '#1D1F35',  // Card/component background
+    elevated: '#252842',  // Modal/elevated surfaces
   },
 
   // Text colors

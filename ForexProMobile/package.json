@@ -1,5 +1,5 @@
 {
-  "name": "forexpromobile",
+  "name": "fusion-markets-mobile",
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
@@ -26,8 +26,10 @@
     "@react-navigation/stack": "^7.3.3",
     "@reduxjs/toolkit": "^2.8.2",
     "expo": "~53.0.10",
+    "expo-blur": "^14.1.5",
     "expo-linear-gradient": "~14.1.5",
     "expo-secure-store": "^14.2.3",
+    "expo-splash-screen": "^0.30.9",
     "expo-status-bar": "~2.2.3",
     "lightweight-charts": "^5.0.7",
     "react": "19.0.0",

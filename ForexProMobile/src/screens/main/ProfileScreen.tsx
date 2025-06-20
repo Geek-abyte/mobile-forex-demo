@@ -2,11 +2,15 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, typography, spacing } from '../../theme';
+import FusionHeader from '../../components/molecules/FusionHeader';
+import FusionMarketsLogo from '../../components/atoms/FusionMarketsLogo';
 
 const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <FusionHeader title="Profile" />
       <View style={styles.content}>
+        <FusionMarketsLogo width={120} height={50} />
         <Text style={styles.title}>Profile</Text>
         <Text style={styles.subtitle}>Coming Soon</Text>
       </View>

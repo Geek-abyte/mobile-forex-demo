@@ -1,7 +1,7 @@
 import { TutorialSection, AppOverview, FeatureHighlight } from '../types/tutorial';
 
 export const APP_OVERVIEW: AppOverview = {
-  title: "Welcome to ForexPro Mobile",
+  title: "Welcome to Fusion Markets",
   description: "🎯 Your forex trading simulator with $10,000 virtual money. Learn to trade without any financial risk!",
   keyFeatures: [
     {
@@ -50,7 +50,7 @@ export const TUTORIAL_SECTIONS: TutorialSection[] = [
     steps: [
       {
         id: 'welcome',
-        title: 'Welcome to ForexPro Mobile',
+        title: 'Welcome to Fusion Markets',
         description: '🎯 This is a forex trading simulator with $10,000 virtual money. Perfect for learning without risk!',
         position: 'center',
         icon: 'rocket',

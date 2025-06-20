@@ -93,7 +93,7 @@ const BiometricSetupScreen: React.FC = () => {
 
           <Text style={styles.title}>Secure Your Account</Text>
           <Text style={styles.subtitle}>
-            Set up biometric authentication for quick and secure access to your ForexPro account.
+            Set up biometric authentication for quick and secure access to your Fusion Markets account.
           </Text>
 
           <View style={styles.benefitsContainer}>
